@@ -14,9 +14,9 @@ class Inicio_Model extends CI_model{
 		}
     }
 
-    function Cantidad_Carro($rut){
+    function Obtener_Cantidad_Carro($rut){
         $this->load->database();
-        $consulta = "SELECT COUNT(*) as CANTIDAD FROM CARRITO WHERE RUT = ?";
+        $consulta = "SELECT COUNT(*) as cantidad FROM carrito WHERE rut = ?";
         $output = $this->db->query($consulta,array($rut));
         if($output->num_rows()>0){
             return $output->result();
@@ -25,10 +25,10 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Sucursal($sucursal){
+    function Obtener_Sucursal($sucursal){
         $this->load->database();
-        $consulta = "SELECT COD_SUCURSAL,NOMBRE,DIRECCION,TELEFONO,URL_FOTO FROM SUCURSAL 
-                    WHERE COD_SUCURSAL = ?";
+        $consulta = "SELECT cod_sucursal,nombre,direccion,telefono,url_foto FROM sucursal 
+                    WHERE cod_sucursal = ?";
         $output = $this->db->query($consulta,array($sucursal));
         if($output->num_rows()>0){
             return $output->result();
@@ -39,7 +39,7 @@ class Inicio_Model extends CI_model{
 
     function Obtener_Sucursales(){
         $this->load->database();
-        $consulta = "SELECT COD_SUCURSAL,NOMBRE FROM SUCURSAL";
+        $consulta = "SELECT cod_sucursal,nombre FROM sucursal";
         $output = $this->db->query($consulta);
         if($output->num_rows()>0){
             return $output->result();
@@ -50,14 +50,14 @@ class Inicio_Model extends CI_model{
 
     function Obtener_Categorias(){
         $this->load->database();
-        $consulta = "SELECT C.COD_CATEGORIA,C.NOMBRE, COUNT(H.COD_HERRAMIENTA) AS CONTADOR 
-        FROM CATEGORIA C
-        JOIN HERRAMIENTA H
-        ON H.COD_CATEGORIA = C.COD_CATEGORIA
-        JOIN SUCURSAL_HERRAMIENTA SH
-        ON SH.COD_HERRAMIENTA = H.COD_HERRAMIENTA
-        WHERE SH.COD_SUCURSAL = ?
-        GROUP BY C.COD_CATEGORIA,C.NOMBRE";
+        $consulta = "SELECT C.cod_categoria,C.nombre, COUNT(H.cod_herramienta) AS contador 
+        FROM categoria C
+        JOIN herramienta H
+        ON H.cod_categoria = C.cod_categoria
+        JOIN sucursal_herramienta SH
+        ON SH.cod_herramienta = H.cod_herramienta
+        WHERE SH.cod_sucursal = ?
+        GROUP BY C.cod_categoria,C.nombre";
         $output = $this->db->query($consulta,array($this->session->sucursal));
         if($output->num_rows()>0){
             return $output->result();
@@ -71,12 +71,12 @@ class Inicio_Model extends CI_model{
             return "Todas las Herramientas";
         }else{
             $this->load->database();
-            $consulta = "SELECT INITCAP(C.NOMBRE) AS NOMBRE FROM CATEGORIA C
-            JOIN HERRAMIENTA H
-            ON H.COD_CATEGORIA = C.COD_CATEGORIA
-            JOIN SUCURSAL_HERRAMIENTA SH
-            ON SH.COD_HERRAMIENTA = H.COD_HERRAMIENTA
-            WHERE SH.COD_SUCURSAL = ? AND C.COD_CATEGORIA = ?";
+            $consulta = "SELECT initcap(C.nombre) AS nombre FROM categoria C
+            JOIN herramienta H
+            ON H.cod_categoria = C.cod_categoria
+            JOIN sucursal_herramienta SH
+            ON SH.cod_herramienta = H.cod_herramienta
+            WHERE SH.cod_sucursal = ? AND C.cod_categoria = ?";
             $output = $this->db->query($consulta,array($this->session->sucursal,$value));
             if($output->num_rows()>0){
                 return "Herramientas de ".$output->result()[0]->nombre;
@@ -91,66 +91,66 @@ class Inicio_Model extends CI_model{
         $output = NULL;
         $sucursal = $this->session->sucursal;
         if($value==""){
-            $consulta = "SELECT H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE AS NOMBREC, (SH.STOCK - SUM(D.CANTIDAD)) AS STOCK
-            FROM HERRAMIENTA H JOIN CATEGORIA C 
-            ON H.COD_CATEGORIA=C.COD_CATEGORIA
-            JOIN SUCURSAL_HERRAMIENTA SH
-            ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-            JOIN DETALLE D 
-            ON D.COD_H=H.COD_HERRAMIENTA
-            WHERE H.COD_HERRAMIENTA IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
-                                        ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
-                                        ON D.COD_H=H.COD_HERRAMIENTA
-                                        WHERE A.FECHA_INICIO BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                        OR A.FECHA_FINAL BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY'))
-            AND SH.COD_SUCURSAL = ".$this->session->sucursal." 
-            GROUP BY H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE, SH.STOCK
+            $consulta = "SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+            FROM herramienta H JOIN categoria C 
+            ON H.cod_categoria=C.cod_categoria
+            JOIN sucursal_herramienta SH
+            ON H.cod_herramienta = SH.cod_herramienta
+            JOIN detalle D 
+            ON D.cod_h=H.cod_herramienta
+            WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                        ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                        ON D.cod_h=H.cod_herramienta
+                                        WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                        OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+            AND SH.cod_sucursal = ".$this->session->sucursal." 
+            GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
             UNION 
-            SELECT H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE AS NOMBREC, SH.STOCK AS STOCK
-            FROM HERRAMIENTA H JOIN CATEGORIA C 
-            ON H.COD_CATEGORIA=C.COD_CATEGORIA
-            JOIN SUCURSAL_HERRAMIENTA SH
-            ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-            FULL OUTER JOIN DETALLE D 
-            ON D.COD_H=H.COD_HERRAMIENTA
-            WHERE H.COD_HERRAMIENTA NOT IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
-                                        ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
-                                        ON D.COD_H=H.COD_HERRAMIENTA
-                                        WHERE A.FECHA_INICIO BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                        OR A.FECHA_FINAL BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY'))
-            AND SH.COD_SUCURSAL = ".$this->session->sucursal."";
+            SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+            FROM herramienta H JOIN categoria C 
+            ON H.cod_categoria=C.cod_categoria
+            JOIN sucursal_herramienta SH
+            ON H.cod_herramienta = SH.cod_herramienta
+            FULL OUTER JOIN detalle D 
+            ON D.cod_h=H.cod_herramienta
+            WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                        ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                        ON D.cod_h=H.cod_herramienta
+                                        WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                        OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+            AND SH.cod_sucursal = ".$this->session->sucursal."";
             $output = $this->db->query($consulta);
         }else{
-            $consulta = "SELECT H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE AS NOMBREC, (SH.STOCK - SUM(D.CANTIDAD)) AS STOCK
-            FROM HERRAMIENTA H JOIN CATEGORIA C 
-            ON H.COD_CATEGORIA=C.COD_CATEGORIA
-            JOIN SUCURSAL_HERRAMIENTA SH
-            ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-            JOIN DETALLE D 
-            ON D.COD_H=H.COD_HERRAMIENTA
-            WHERE H.COD_HERRAMIENTA IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
-                                        ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
-                                        ON D.COD_H=H.COD_HERRAMIENTA
-                                        WHERE A.FECHA_INICIO BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                        OR A.FECHA_FINAL BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY'))
-            AND SH.COD_SUCURSAL = ".$this->session->sucursal."
-            AND H.COD_CATEGORIA = ?
-            GROUP BY H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE, SH.STOCK
+            $consulta = "SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+            FROM herramienta H JOIN categoria C 
+            ON H.cod_categoria=C.cod_categoria
+            JOIN sucursal_herramienta SH
+            ON H.cod_herramienta = SH.cod_herramienta
+            JOIN detalle D 
+            ON D.cod_h=H.cod_herramienta
+            WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                        ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                        ON D.cod_h=H.cod_herramienta
+                                        WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                        OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+            AND SH.cod_sucursal = ".$this->session->sucursal."
+            AND H.cod_categoria = ?
+            GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
             UNION
-            SELECT H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE AS NOMBREC, SH.STOCK AS STOCK
-            FROM HERRAMIENTA H JOIN CATEGORIA C 
-            ON H.COD_CATEGORIA=C.COD_CATEGORIA
-            JOIN SUCURSAL_HERRAMIENTA SH
-            ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-            FULL OUTER JOIN DETALLE D 
-            ON D.COD_H=H.COD_HERRAMIENTA
-            WHERE H.COD_HERRAMIENTA NOT IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
-                                        ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
-                                        ON D.COD_H=H.COD_HERRAMIENTA
-                                        WHERE A.FECHA_INICIO BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                        OR A.FECHA_FINAL BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY'))
-            AND SH.COD_SUCURSAL = ".$this->session->sucursal."
-            AND H.COD_CATEGORIA = ?";
+            SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+            FROM herramienta H JOIN categoria C 
+            ON H.cod_categoria=C.cod_categoria
+            JOIN sucursal_herramienta SH
+            ON H.cod_herramienta = SH.cod_herramienta
+            FULL OUTER JOIN detalle D 
+            ON D.cod_h=H.cod_herramienta
+            WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                        ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                        ON D.cod_h=H.cod_herramienta
+                                        WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                        OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+            AND SH.cod_sucursal = ".$this->session->sucursal."
+            AND H.cod_categoria = ?";
             $output = $this->db->query($consulta,array((int)$value,(int)$value));
         }
         if($output->num_rows()>0){
@@ -163,38 +163,38 @@ class Inicio_Model extends CI_model{
     function Obtener_Producto($codigo){
         $this->load->database();
         $output = NULL;
-        $consulta = "SELECT H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE AS NOMBREC, (SH.STOCK - SUM(D.CANTIDAD)) AS STOCK
-        FROM HERRAMIENTA H JOIN CATEGORIA C 
-        ON H.COD_CATEGORIA = C.COD_CATEGORIA
-        JOIN SUCURSAL_HERRAMIENTA SH
-        ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-        JOIN DETALLE D 
-        ON D.COD_H=H.COD_HERRAMIENTA
-        WHERE H.COD_HERRAMIENTA IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
-                                    ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
-                                    ON D.COD_H=H.COD_HERRAMIENTA
-                                    WHERE A.FECHA_INICIO BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                    OR A.FECHA_FINAL BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                    AND H.COD_HERRAMIENTA = ".$codigo.")
-        AND SH.COD_SUCURSAL = ".$this->session->sucursal." 
-        AND H.COD_HERRAMIENTA = ".$codigo."
-        GROUP BY H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE, SH.STOCK
+        $consulta = "SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+        FROM herramienta H JOIN categoria C 
+        ON H.cod_categoria = C.cod_categoria
+        JOIN sucursal_herramienta SH
+        ON H.cod_herramienta = SH.cod_herramienta
+        JOIN detalle D 
+        ON D.cod_h=H.cod_herramienta
+        WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                    ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                    ON D.cod_h=H.cod_herramienta
+                                    WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                    OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                    AND H.cod_herramienta = ".$codigo.")
+        AND SH.cod_sucursal = ".$this->session->sucursal." 
+        AND H.cod_herramienta = ".$codigo."
+        GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
         UNION 
-        SELECT H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE AS NOMBREC, SH.STOCK AS STOCK
-        FROM HERRAMIENTA H JOIN CATEGORIA C 
-        ON H.COD_CATEGORIA=C.COD_CATEGORIA
-        JOIN SUCURSAL_HERRAMIENTA SH
-        ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-        FULL OUTER JOIN DETALLE D 
-        ON D.COD_H=H.COD_HERRAMIENTA
-        WHERE H.COD_HERRAMIENTA NOT IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
-                                    ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
-                                    ON D.COD_H=H.COD_HERRAMIENTA
-                                    WHERE A.FECHA_INICIO BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                    OR A.FECHA_FINAL BETWEEN TO_DATE('".$this->session->inicio."', 'DD/MM/YYYY') AND TO_DATE('".$this->session->fin."', 'DD/MM/YYYY')
-                                    AND H.COD_HERRAMIENTA = ".$codigo.")
-        AND SH.COD_SUCURSAL = ".$this->session->sucursal."
-        AND H.COD_HERRAMIENTA = ".$codigo."";
+        SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+        FROM herramienta H JOIN categoria C 
+        ON H.cod_categoria=C.cod_categoria
+        JOIN sucursal_herramienta SH
+        ON H.cod_herramienta = SH.cod_herramienta
+        FULL OUTER JOIN detalle D 
+        ON D.cod_h=H.cod_herramienta
+        WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                    ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                    ON D.cod_h=H.cod_herramienta
+                                    WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                    OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                    AND H.cod_herramienta = ".$codigo.")
+        AND SH.cod_sucursal = ".$this->session->sucursal."
+        AND H.cod_herramienta = ".$codigo."";
         $output = $this->db->query($consulta);
         if($output->num_rows()>0){
             return $output->result();
@@ -205,48 +205,34 @@ class Inicio_Model extends CI_model{
 
     function Validar_Sesion($rut,$pass){
         $this->load->database();
-        $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-        if($this->Revisar_Conexion($conexion)==TRUE){
-            $procedimiento = "BEGIN INICIO_SESION(:rut, :pass, :estado, :mensaje); END;";
-            $consulta = oci_parse($conexion, $procedimiento);
-            oci_bind_by_name($consulta, ':rut', $rut);
-            oci_bind_by_name($consulta, ':pass', $pass);
-            oci_bind_by_name($consulta, ':estado', $estado, 150);
-            oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-            oci_execute($consulta);        
-            oci_free_statement($consulta);
-            oci_close($conexion);
-            $respuesta = new stdClass();
-            $respuesta->estado = $estado;
-            $respuesta->mensaje = $mensaje;   
-            if($estado=='TRUE'){
-                $this->_AsignarSesion($rut);
-            }         
-        }else{
-            $respuesta = new stdClass();
-            $respuesta->estado = 'FALSE';
-            $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
+        $procedimiento = "select bool,message from inicio_sesion(?,?);";
+        $consulta = $this->db->query($procedimiento,array($rut,$pass));
+        $respuesta = new stdClass();
+        $respuesta->estado = $consulta->result()[0]->bool;
+        $respuesta->mensaje = $consulta->result()[0]->message;   
+        if($respuesta->estado=='TRUE'){
+            $this->_AsignarSesion($rut);
         }
         return $respuesta;
     }
 
     private function _AsignarSesion($rut){
         $this->load->database();
-        $consulta = "SELECT RUT,NOMBRES,APELLIDOS,ROL FROM USUARIO WHERE RUT = ?";
+        $consulta = "SELECT rut,nombres,apellidos,rol FROM usuario WHERE rut = ?";
         $output = $this->db->query($consulta,array($rut));
         if($output->num_rows()>0){
             $this->session->estado = TRUE;
-            $this->session->rut = $output->result()[0]->RUT;
-            $this->session->nombres = $output->result()[0]->NOMBRES;
-            $this->session->apellidos = $output->result()[0]->APELLIDOS;
-            $this->session->rol = $output->result()[0]->ROL;
+            $this->session->rut = $output->result()[0]->rut;
+            $this->session->nombres = $output->result()[0]->nombres;
+            $this->session->apellidos = $output->result()[0]->apellidos;
+            $this->session->rol = $output->result()[0]->rol;
         }
     }
 
-    function Verificar_Carrito(){
+    function Verificar_Carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
-            $consulta = "SELECT * FROM CARRITO WHERE RUT = ?";
+            $consulta = "SELECT * FROM carrito WHERE rut = ?";
             $output = $this->db->query($consulta,array($this->session->rut));
             if($output->num_rows()>0){
                 return TRUE;
@@ -258,10 +244,10 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Verificar_Sucursal_Carrito(){
+    function Verificar_Sucursal_Carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
-            $consulta = "SELECT COD_SUCURSAL FROM CARRITO WHERE RUT = ?";
+            $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
             $output = $this->db->query($consulta,array($this->session->rut));
             if($output->num_rows()>0){
                 return $output->result()[0];
@@ -276,14 +262,14 @@ class Inicio_Model extends CI_model{
     function Obtener_Carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
-            $consulta = "SELECT C.COD_HERRAMIENTA, H.NOMBRE, H.URL_FOTO, C.CANTIDAD, SH.STOCK, C.TOTAL, 
-            SH.PRECIO FROM CARRITO C
-            JOIN HERRAMIENTA H
-            ON C.COD_HERRAMIENTA = H.COD_HERRAMIENTA
-            JOIN SUCURSAL_HERRAMIENTA SH
-            ON SH.COD_HERRAMIENTA = H.COD_HERRAMIENTA
-            WHERE SH.COD_SUCURSAL = ?
-            AND C.RUT = ?";
+            $consulta = "SELECT C.cod_herramienta, H.nombre, H.url_foto, C.cantidad, SH.stock, C.total, 
+            SH.precio FROM carrito C
+            JOIN herramienta H
+            ON C.cod_herramienta = H.cod_herramienta
+            JOIN sucursal_herramienta SH
+            ON SH.cod_herramienta = H.cod_herramienta
+            WHERE SH.cod_sucursal = ?
+            AND C.rut = ?";
             $output = $this->db->query($consulta,array($this->session->sucursal,$this->session->rut));
             if($output->num_rows()>0){
                 return $output->result();
@@ -297,54 +283,39 @@ class Inicio_Model extends CI_model{
 
     function Borrar_H_Carrito($datos){
         $this->load->database();
-        $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-        if($this->Revisar_Conexion($conexion)==TRUE){
-            $procedimiento = "BEGIN BORRAR_HERRAMIENTA_CARRITO(:rut, :codigo_h, :codigo_s, :estado, :mensaje); END;";
-            $consulta = oci_parse($conexion, $procedimiento);
-            oci_bind_by_name($consulta, ':rut', $datos->rut);
-            oci_bind_by_name($consulta, ':codigo_h', $datos->codigo);
-            oci_bind_by_name($consulta, ':codigo_s', $datos->sucursal);
-            oci_bind_by_name($consulta, ':estado', $estado, 150);
-            oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-            oci_execute($consulta);        
-            oci_free_statement($consulta);
-            oci_close($conexion);
-            $respuesta = new stdClass();
-            $respuesta->estado = $estado;
-            $respuesta->mensaje = $mensaje;   
-        }else{
-            $respuesta = new stdClass();
-            $respuesta->estado = 'FALSE';
-            $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
-        }
+        $procedimiento = "select bool,message from borrar_herramienta_carrito(?,?,?);";
+        $consulta = $this->db->query($procedimiento,array($datos->rut,$datos->codigo,$datos->sucursal));
+        $respuesta = new stdClass();
+        $respuesta->estado = $consulta->result()[0]->bool;
+        $respuesta->mensaje = $consulta->result()[0]->message;  
         return $respuesta;
     }
 
-    function Total_Carro($rut,$sucursal){
+    function Obtener_Total_Carro($rut,$sucursal){
         $this->load->database();
-        $consulta = "SELECT SUM(TOTAL) AS TOTAL FROM CARRITO 
-        WHERE RUT = ?
-        AND COD_SUCURSAL = ?";
+        $consulta = "SELECT sum(total) AS total FROM carrito 
+        WHERE rut = ?
+        AND cod_sucursal = ?";
         $output = $this->db->query($consulta,array($rut,$sucursal));
         if($output->num_rows()>0){
-            return $output->result()[0]->TOTAL;
+            return $output->result()[0]->total;
         }else{
             return FALSE;
         }
 
     }
 
-    function Agregar_Carrito($codigo,$cantidad){
+    function Agregar_Carro($codigo,$cantidad){
         $this->load->database();
-        $consulta = "SELECT COD_SUCURSAL FROM CARRITO WHERE RUT = ?";
+        $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
         $output = $this->db->query($consulta,array($this->session->rut));
         $verificador = FALSE;
         if($output->num_rows()>0){
-            $suc = $output->result()[0]->COD_SUCURSAL;
+            $suc = $output->result()[0]->cod_sucursal;
             if($suc==$this->session->sucursal){
                 $verificador = TRUE;
             }else{
-                $limpiar_carro = $this->Limpiar_Carrito();
+                $limpiar_carro = $this->Limpiar_Carro();
                 if($limpiar_carro->estado==TRUE){
                     $respuesta = new stdClass();
                     $respuesta->estado = 'REFRESH';
@@ -364,52 +335,34 @@ class Inicio_Model extends CI_model{
             $sucursal = $this->session->sucursal;
             $fecha_i = $this->session->inicio;
             $fecha_f = $this->session->fin;
-            $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-            if($this->Revisar_Conexion($conexion)==TRUE){
-                $procedimiento = "BEGIN AGREGA_CARRITO(:rut, :codigo_h, :codigo_s, :fecha_i, :fecha_f, :cantidad, :estado, :mensaje); END;";
-                $consulta = oci_parse($conexion, $procedimiento);
-                oci_bind_by_name($consulta, ':rut', $rut);
-                oci_bind_by_name($consulta, ':codigo_h', $codigo);
-                oci_bind_by_name($consulta, ':codigo_s', $sucursal);
-                oci_bind_by_name($consulta, ':fecha_i', $fecha_i);
-                oci_bind_by_name($consulta, ':fecha_f', $fecha_f);
-                oci_bind_by_name($consulta, ':cantidad', $cantidad);
-                oci_bind_by_name($consulta, ':estado', $estado, 150);
-                oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-                oci_execute($consulta);        
-                oci_free_statement($consulta);
-                oci_close($conexion);
-                $respuesta = new stdClass();
-                $respuesta->estado = $estado;
-                $respuesta->mensaje = $mensaje;                   
-            }else{
-                $respuesta = new stdClass();
-                $respuesta->estado = 'FALSE';
-                $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
-            }
+            $procedimiento = "select bool,message from agrega_carrito(?,?,?,?,?,?);";
+            $consulta = $this->db->query($procedimiento,array($rut,$codigo,$sucursal,$fecha_i,$fecha_f,$cantidad));
+            $respuesta = new stdClass();
+            $respuesta->estado = $consulta->result()[0]->bool;
+            $respuesta->mensaje = $consulta->result()[0]->message; 
             return $respuesta;
         }
     }
 
-    function Quitar_Carrito($codigo,$cantidad){
+    function Quitar_Carro($codigo,$cantidad){
         $this->load->database();
-        $consulta = "SELECT COD_SUCURSAL FROM CARRITO WHERE RUT = ?";
+        $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
         $output = $this->db->query($consulta,array($this->session->rut));
         $verificador = FALSE;
         if($output->num_rows()>0){
-            $suc = $output->result()[0]->COD_SUCURSAL;
+            $suc = $output->result()[0]->cod_sucursal;
             if($suc==$this->session->sucursal){
                 $verificador = TRUE;
             }else{
-                $limpiar_carro = $this->Limpiar_Carrito();
+                $limpiar_carro = $this->Limpiar_Carro();
                 if($limpiar_carro->estado==TRUE){
                     $respuesta = new stdClass();
                     $respuesta->estado = 'REFRESH';
-                    $respuesta->mensaje = 'SE HA VACIADO EL CARRITO YA QUE CAMBIÓ LA SUCURSAL';
+                    $respuesta->mensaje = 'SE HA VACIADO EL carrito YA QUE CAMBIÓ LA sucursal';
                 }else{
                     $respuesta = new stdClass();
                     $respuesta->estado = 'ERROR';
-                    $respuesta->mensaje = 'HA OCURRIDO UN ERROR EN LA FUNCION QUITAR_CARRITO';
+                    $respuesta->mensaje = 'HA OCURRIDO UN ERROR EN LA FUNCION QUITAR_carrito';
                 }
                 return $respuesta;
             }
@@ -419,119 +372,54 @@ class Inicio_Model extends CI_model{
         if($verificador==TRUE){
             $rut = $this->session->rut;
             $sucursal = $this->session->sucursal;
-            $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-            if($this->Revisar_Conexion($conexion)==TRUE){
-                $procedimiento = "BEGIN QUITA_CARRITO(:rut, :codigo_h, :codigo_s, :cantidad, :estado, :mensaje); END;";
-                $consulta = oci_parse($conexion, $procedimiento);
-                oci_bind_by_name($consulta, ':rut', $rut);
-                oci_bind_by_name($consulta, ':codigo_h', $codigo);
-                oci_bind_by_name($consulta, ':codigo_s', $sucursal);
-                oci_bind_by_name($consulta, ':cantidad', $cantidad);
-                oci_bind_by_name($consulta, ':estado', $estado, 150);
-                oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-                oci_execute($consulta);        
-                oci_free_statement($consulta);
-                oci_close($conexion);
-                $respuesta = new stdClass();
-                $respuesta->estado = $estado;
-                $respuesta->mensaje = $mensaje;                   
-            }else{
-                $respuesta = new stdClass();
-                $respuesta->estado = 'FALSE';
-                $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
-            }
+            $procedimiento = "select bool,message from quita_carrito(?,?,?,?);";
+            $consulta = $this->db->query($procedimiento,array($rut,$codigo,$sucursal,$cantidad));
+            $respuesta = new stdClass();
+            $respuesta->estado = $consulta->result()[0]->bool;
+            $respuesta->mensaje = $consulta->result()[0]->message; 
             return $respuesta;
         }
     }
 
-    function Efectuar_Registro($datos){
+    function Realizar_Registro($datos){
         $this->load->database();
-        $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-        if($this->Revisar_Conexion($conexion)==TRUE){
-            $procedimiento = "BEGIN INSERTAR_USUARIO(:rut, :nombres, :apellidos, :correo, :pass, :direccion, :telefono, :estado, :mensaje); END;";
-            $consulta = oci_parse($conexion, $procedimiento);
-            oci_bind_by_name($consulta, ':rut', $datos->Rut);
-            oci_bind_by_name($consulta, ':nombres', $datos->Nombres);
-            oci_bind_by_name($consulta, ':apellidos', $datos->Apellidos);
-            oci_bind_by_name($consulta, ':correo', $datos->Correo);
-            oci_bind_by_name($consulta, ':pass', $datos->Pass);
-            oci_bind_by_name($consulta, ':direccion', $datos->Direccion);
-            oci_bind_by_name($consulta, ':telefono', $datos->Telefono);
-            oci_bind_by_name($consulta, ':estado', $estado, 150);
-            oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-            oci_execute($consulta);        
-            oci_free_statement($consulta);
-            oci_close($conexion);
-            $respuesta = new stdClass();
-            $respuesta->estado = $estado;
-            $respuesta->mensaje = $mensaje;                   
-        }else{
-            $respuesta = new stdClass();
-            $respuesta->estado = 'FALSE';
-            $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
-        }
+        $procedimiento = "select bool,message from insertar_usuario(?,?,?,?,?,?,?);";
+        $consulta = $this->db->query($procedimiento,array($datos->Rut,$datos->Nombres,$datos->Apellidos,$datos->Correo,$datos->Pass,$datos->Direccion,$datos->Telefono));
+        $respuesta = new stdClass();
+        $respuesta->estado = $consulta->result()[0]->bool;
+        $respuesta->mensaje = $consulta->result()[0]->message;                   
         return $respuesta;
     }
 
-    function Limpiar_Carrito(){
+    function Limpiar_Carro(){
         if($this->session->estado==TRUE){
             $rut = $this->session->rut;
             $this->load->database();
+            $procedimiento = "select bool,message from vaciar_carrito(?);";
+            $consulta = $this->db->query($procedimiento,array($rut));
             $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-            if($this->Revisar_Conexion($conexion)==TRUE){
-                $procedimiento = "BEGIN VACIAR_CARRITO(:rut, :estado, :mensaje); END;";
-                $consulta = oci_parse($conexion, $procedimiento);
-                oci_bind_by_name($consulta, ':rut', $rut);
-                oci_bind_by_name($consulta, ':estado', $estado, 150);
-                oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-                oci_execute($consulta);        
-                oci_free_statement($consulta);
-                oci_close($conexion);
-                $respuesta = new stdClass();
-                $respuesta->estado = $estado;
-                $respuesta->mensaje = $mensaje;                   
-            }else{
-                $respuesta = new stdClass();
-                $respuesta->estado = 'FALSE';
-                $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
-            }
+            $respuesta = new stdClass();
+            $respuesta->estado = $consulta->result()[0]->bool;
+            $respuesta->mensaje = $consulta->result()[0]->message;                   
             return $respuesta;
         }else{
             redirect(base_url());
         }
     }
 
-    function Generar_Arriendo(){
+    function Realizar_Arriendo(){
         if($this->session->estado==TRUE){
             $rut = $this->session->rut;
             $sucursal = $this->session->sucursal;
             $fecha_inicio = $this->session->inicio;
             $fecha_final = $this->session->fin;
             $this->load->database();
-            $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
-            if($this->Revisar_Conexion($conexion)==TRUE){
-                $procedimiento = "BEGIN ARRENDAR(:inicio, :fin, :rut, :sucursal, :estado, :mensaje, :id_arriendo); END;";
-                $consulta = oci_parse($conexion, $procedimiento);
-                oci_bind_by_name($consulta, ':inicio', $fecha_inicio);
-                oci_bind_by_name($consulta, ':fin', $fecha_final);
-                oci_bind_by_name($consulta, ':rut', $rut);
-                oci_bind_by_name($consulta, ':sucursal', $sucursal);
-                oci_bind_by_name($consulta, ':estado', $estado, 150);
-                oci_bind_by_name($consulta, ':mensaje', $mensaje, 150);
-                oci_bind_by_name($consulta, ':id_arriendo', $arriendo, 100);
-                oci_execute($consulta);        
-                oci_free_statement($consulta);
-                oci_close($conexion);
-                $respuesta = new stdClass();
-                $respuesta->estado = $estado;
-                $respuesta->mensaje = $mensaje;
-                $respuesta->arriendo = $arriendo;                       
-            }else{
-                $respuesta = new stdClass();
-                $respuesta->estado = 'FALSE';
-                $respuesta->mensaje = 'EL SISTEMA NO HA PODIDO CONECTARSE A LA BASE DE DATOS';
-                $respuesta->arriendo = $arriendo;    
-            }            
+            $procedimiento = "select bool,message,codigo_arriendo from arrendar(?,?,?,?);";
+            $consulta = $this->db->query($procedimiento,array($fecha_inicio,$fecha_final,$rut,$sucursal));
+            $respuesta = new stdClass();
+            $respuesta->estado = $consulta->result()[0]->bool;
+            $respuesta->mensaje = $consulta->result()[0]->message;
+            $respuesta->arriendo = $consulta->result()[0]->codigo_arriendo;                               
         }else{
             $respuesta = new stdClass();
             $respuesta->estado = 'FALSE';
@@ -543,15 +431,15 @@ class Inicio_Model extends CI_model{
 
     function Obtener_Arriendo($value){
         $this->load->database();
-        $consulta = "SELECT A.COD_ARRIENDO,TO_CHAR(A.FECHA_INICIO, 'DD/MM/YYYY') as FECHA_INICIO,
-                    TO_CHAR(A.FECHA_FINAL, 'DD/MM/YYYY') AS FECHA_FINAL,A.TOTAL,A.RUT_U,U.NOMBRES,
-                    U.APELLIDOS,TO_CHAR(A.FECHA_ARRIENDO, 'DD/MM/YYYY') AS FECHA_ARRIENDO,
-                    S.COD_SUCURSAL,S.NOMBRE
-                    FROM ARRIENDO A JOIN SUCURSAL S 
-                    ON A.COD_S = S.COD_SUCURSAL JOIN USUARIO U
-                    ON A.RUT_U = U.RUT
-                    WHERE COD_ARRIENDO = ?
-                    AND U.RUT = ?";
+        $consulta = "SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
+                    to_char(A.fecha_final, 'DD/MM/YYYY') AS fecha_final,A.total,A.rut_U,U.nombres,
+                    U.apellidos,to_char(A.fecha_arriendo, 'DD/MM/YYYY') AS fecha_arriendo,
+                    S.cod_sucursal,S.nombre
+                    FROM arriendo A JOIN sucursal S 
+                    ON A.COD_S = S.cod_sucursal JOIN usuario U
+                    ON A.rut_U = U.rut
+                    WHERE cod_arriendo = ?
+                    AND U.rut = ?";
         $output = $this->db->query($consulta,array($value,$this->session->rut));
         if($output->num_rows()>0){
             return $output->result();
@@ -562,13 +450,13 @@ class Inicio_Model extends CI_model{
 
     function Obtener_Mas_Arrendados(){
         $this->load->database();
-        $consulta = "SELECT D.COD_H, H.NOMBRE, H.URL_FOTO,SH.PRECIO, COUNT(D.ID_A) AS CANTIDAD_ARRIENDOS 
-        FROM DETALLE D JOIN HERRAMIENTA H
-        ON D.COD_H = H.COD_HERRAMIENTA
-        JOIN SUCURSAL_HERRAMIENTA SH
-        ON SH.COD_HERRAMIENTA = H.COD_HERRAMIENTA
-        WHERE SH.COD_SUCURSAL = ?
-        GROUP BY COD_H, H.NOMBRE, H.URL_FOTO, SH.PRECIO ORDER BY CANTIDAD_ARRIENDOS DESC";
+        $consulta = "SELECT D.cod_h, H.nombre, H.url_foto,SH.precio, COUNT(D.id_a) AS cantidad_arriendos 
+        FROM detalle D JOIN herramienta H
+        ON D.cod_h = H.cod_herramienta
+        JOIN sucursal_herramienta SH
+        ON SH.cod_herramienta = H.cod_herramienta
+        WHERE SH.cod_sucursal = ?
+        GROUP BY cod_h, H.nombre, H.url_foto, SH.precio ORDER BY cantidad_arriendos DESC";
         $output = $this->db->query($consulta,array($this->session->sucursal));
         if($output->num_rows()>0){
             return $output->result();
@@ -579,12 +467,12 @@ class Inicio_Model extends CI_model{
 
     function Obtener_Detalle($value, $sucursal){
         $this->load->database();
-        $consulta = "SELECT D.COD_H, H.NOMBRE,H.URL_FOTO,D.CANTIDAD,D.TOTAL_DETALLE,SH.PRECIO 
-                    FROM DETALLE D JOIN HERRAMIENTA H
-                    ON D.COD_H = H.COD_HERRAMIENTA JOIN SUCURSAL_HERRAMIENTA SH
-                    ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
-                    WHERE ID_A = ?
-                    AND SH.COD_SUCURSAL = ?";
+        $consulta = "SELECT D.cod_h, H.nombre,H.url_foto,D.cantidad,D.total_detalle,SH.precio 
+                    FROM detalle D JOIN herramienta H
+                    ON D.cod_h = H.cod_herramienta JOIN sucursal_herramienta SH
+                    ON H.cod_herramienta = SH.cod_herramienta
+                    WHERE id_a = ?
+                    AND SH.cod_sucursal = ?";
         $output = $this->db->query($consulta,array($value,$sucursal));
         if($output->num_rows()>0){
             return $output->result();

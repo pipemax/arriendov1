@@ -4,7 +4,9 @@ select bool,message from ACTUALIZAR_USER(185756203,'felipe','TAPIA','FTAPIA46@GM
 SELECT BOOL,MESSAGE FROM ACTUALIZAR_PASSWORD_USER(185756203,'MAXIMUS');
 SELECT BOOL,MESSAGE FROM NUEVA_HERRAMIENTA(1,'algo','BUENA HERRAMIENTA','',1)
 select * from usuario;
-
+select * from arriendo;
+select * from carrito;
+select * from detalle;
 
 select bool,message from NUEVA_CATEGORIA('CARPINTERIA');
 select bool,message from NUEVA_CATEGORIA('COMPACTACION');

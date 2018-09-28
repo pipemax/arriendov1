@@ -197,7 +197,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 /****************************************************************************************************************************************************************/
-SELECT * FROM GETPASS(185756203);
+SELECT * FROM GETPASS(123123123);
 CREATE OR REPLACE FUNCTION GETPASS(
     RUT_U IN USUARIO.RUT%TYPE)
     RETURNS VARCHAR AS $$
@@ -383,7 +383,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 /****************************************************************************************************************************************************************/
-SELECT * FROM VALIDAR_LOGIN(97784507,'PIPEMAX');
+SELECT * FROM VALIDAR_LOGIN(123123123,'AAAAAAAA');
 DROP FUNCTION VALIDAR_LOGIN(INT,VARCHAR);
 CREATE OR REPLACE FUNCTION VALIDAR_LOGIN
     (RUT_C  IN  INT,

@@ -14,21 +14,25 @@ class Inicio extends CI_Controller {
 		}
 	}
 
-	public function index(){		
-		$this->load->model("Inicio_Model");
+	private function _Head(){
 		if($this->session->estado==TRUE){
 			$Head = new stdClass();
-			$Head->Cantidad = $this->Inicio_Model->Cantidad_Carro($this->session->rut);
+			$Head->Cantidad = $this->Inicio_Model->Obtener_Cantidad_Carro($this->session->rut);
 		}else{ 
 			$Head = new stdClass();
 			$Head->Cantidad = 0;
 		}
-		$Head->Sucursal = $this->Inicio_Model->Sucursal($this->session->sucursal);
+		$Head->Sucursal = $this->Inicio_Model->Obtener_Sucursal($this->session->sucursal);
 		$Head->Sucursales = $this->Inicio_Model->Obtener_Sucursales();
 		$Head->Categorias = $this->Inicio_Model->Obtener_Categorias();
+		return $Head;
+	}
+
+	public function index(){		
+		$this->load->model("Inicio_Model");		
 		$Arriendos = new stdClass();
 		$Arriendos->Arriendos = $this->Inicio_Model->Obtener_Mas_Arrendados();
-		$this->load->view("Head", $Head);
+		$this->load->view("Head", $this->_Head());
 		$this->load->view("Inicio", $Arriendos);
 		$this->load->view("Footer");
 	}
@@ -50,12 +54,12 @@ class Inicio extends CI_Controller {
 		if($this->input->post('sucursal')){
 			$sucursal = $this->input->post('sucursal');
 			$this->load->model("Inicio_Model");
-			$output = $this->Inicio_Model->Verificar_Carrito();
+			$output = $this->Inicio_Model->Verificar_Carro();
 			if($output!=FALSE){
-				$output2 = $this->Inicio_Model->Verificar_Sucursal_Carrito();
-				if($this->session->estado==TRUE && $sucursal!=$output2->COD_SUCURSAL){
+				$output2 = $this->Inicio_Model->Verificar_Sucursal_Carro();
+				if($this->session->estado==TRUE && $sucursal!=$output2->cod_sucursal){
 					$this->load->model("Inicio_Model");
-					$output = $this->Inicio_Model->Limpiar_Carrito();
+					$output = $this->Inicio_Model->Limpiar_Carro();
 				}
 			}
 			$this->session->sucursal = $sucursal;
@@ -100,7 +104,7 @@ class Inicio extends CI_Controller {
 			$Datos->Telefono = $this->input->post('telefono');
 			$Datos->Pass = $this->input->post('password1');
 			$this->load->model("Inicio_Model");
-			$output = $this->Inicio_Model->Efectuar_Registro($Datos);
+			$output = $this->Inicio_Model->Realizar_Registro($Datos);
 			echo json_encode($output);
 		}else{
 			redirect(base_url());
@@ -110,11 +114,7 @@ class Inicio extends CI_Controller {
 	public function Registro(){
 		if($this->session->estado==FALSE){
 			$this->load->model("Inicio_Model");
-			$Head = new stdClass();
-			$Head->Sucursal = $this->Inicio_Model->Sucursal($this->session->sucursal);
-			$Head->Sucursales = $this->Inicio_Model->Obtener_Sucursales();
-			$Head->Categorias = $this->Inicio_Model->Obtener_Categorias();
-			$this->load->view("Head",$Head);
+			$this->load->view("Head",$this->_Head());
 			$this->load->view("Registro");
 			$this->load->view("Footer");
 		}else{
@@ -128,7 +128,7 @@ class Inicio extends CI_Controller {
 				$codigo = $this->input->post('codigo');
 				$cantidad = $this->input->post('cantidad');
 				$this->load->model("Inicio_Model");
-				$output = $this->Inicio_Model->Agregar_Carrito($codigo,$cantidad);
+				$output = $this->Inicio_Model->Agregar_Carro($codigo,$cantidad);
 				echo json_encode($output);
 			}else{
 				$respuesta = new stdClass();
@@ -146,7 +146,7 @@ class Inicio extends CI_Controller {
 				$codigo = $this->input->post('codigo');
 				$cantidad = $this->input->post('cantidad');
 				$this->load->model("Inicio_Model");
-				$output = $this->Inicio_Model->Quitar_Carrito($codigo,$cantidad);
+				$output = $this->Inicio_Model->Quitar_Carro($codigo,$cantidad);
 				echo json_encode($output);
 			}else{
 				$respuesta = new stdClass();
@@ -184,7 +184,7 @@ class Inicio extends CI_Controller {
 			$rut = $this->session->rut;
 			$sucursal = $this->session->sucursal;
 			$this->load->model("Inicio_Model");
-			$output = $this->Inicio_Model->Total_Carro($rut,$sucursal);
+			$output = $this->Inicio_Model->Obtener_Total_Carro($rut,$sucursal);
 			echo $output;
 		}else{
 			redirect(base_url());
@@ -193,22 +193,12 @@ class Inicio extends CI_Controller {
 
 	public function Carrito(){
 		if($this->session->estado==TRUE){
-			$this->load->model("Inicio_Model");
-			if($this->session->estado==TRUE){
-				$Head = new stdClass();
-				$Head->Cantidad = $this->Inicio_Model->Cantidad_Carro($this->session->rut);
-			}else{ 
-				$Head = new stdClass();
-				$Head->Cantidad = 0;
-			}
-			$Head->Sucursal = $this->Inicio_Model->Sucursal($this->session->sucursal);
-			$Head->Sucursales = $this->Inicio_Model->Obtener_Sucursales();
-			$Head->Categorias = $this->Inicio_Model->Obtener_Categorias();
-			$this->load->view("Head", $Head);
+			$this->load->model("Inicio_Model");			
+			$this->load->view("Head", $this->_Head());
 			$Carro = new stdClass();
 			$Carro->Carrito = $this->Inicio_Model->Obtener_Carro();
 			if($Carro->Carrito!=FALSE){
-				$Carro->Total = $this->Inicio_Model->Total_Carro($this->session->rut,$this->session->sucursal);
+				$Carro->Total = $this->Inicio_Model->Obtener_Total_Carro($this->session->rut,$this->session->sucursal);
 				$this->load->view("Carrito",$Carro);
 				$this->load->view("Footer");
 			}else{
@@ -223,7 +213,7 @@ class Inicio extends CI_Controller {
 		if($this->session->estado==TRUE){
 			if($this->input->post('arriendo')=="YES"){
 				$this->load->model("Inicio_Model");
-				$output = $this->Inicio_Model->Generar_Arriendo();
+				$output = $this->Inicio_Model->Realizar_Arriendo();
 				echo json_encode($output);
 			}else{
 				redirect('carrito');
@@ -240,7 +230,7 @@ class Inicio extends CI_Controller {
 				$this->load->model("Inicio_Model");
 				$arriendo = $this->Inicio_Model->Obtener_Arriendo($value);
 				if($arriendo!=FALSE){
-					$detalle = $this->Inicio_Model->Obtener_Detalle($value,$arriendo[0]->COD_SUCURSAL);
+					$detalle = $this->Inicio_Model->Obtener_Detalle($value,$arriendo[0]->cod_sucursal);
 					if($detalle!=FALSE){
 						$retorno->arriendo = $arriendo;
 						$retorno->detalle = $detalle;
@@ -251,18 +241,8 @@ class Inicio extends CI_Controller {
 					}
 				}else{
 					redirect('productos');
-				}
-				if($this->session->estado==TRUE){
-					$Head = new stdClass();
-					$Head->Cantidad = $this->Inicio_Model->Cantidad_Carro($this->session->rut);
-				}else{ 
-					$Head = new stdClass();
-					$Head->Cantidad = 0;
-				}
-				$Head->Sucursal = $this->Inicio_Model->Sucursal($this->session->sucursal);
-				$Head->Sucursales = $this->Inicio_Model->Obtener_Sucursales();
-				$Head->Categorias = $this->Inicio_Model->Obtener_Categorias();
-				$this->load->view("Head",$Head);
+				}				
+				$this->load->view("Head",$this->_Head());
 				$this->load->view("Resumen",$retorno);
 				$this->load->view("Footer");
 			}else{
@@ -279,18 +259,8 @@ class Inicio extends CI_Controller {
 
 	public function Detalle($value = ""){
 		if($value!=""){
-			$this->load->model("Inicio_Model");
-			if($this->session->estado==TRUE){
-				$Head = new stdClass();
-				$Head->Cantidad = $this->Inicio_Model->Cantidad_Carro($this->session->rut);
-			}else{ 
-				$Head = new stdClass();
-				$Head->Cantidad = 0;
-			}
-			$Head->Sucursal = $this->Inicio_Model->Sucursal($this->session->sucursal);
-			$Head->Sucursales = $this->Inicio_Model->Obtener_Sucursales();
-			$Head->Categorias = $this->Inicio_Model->Obtener_Categorias();
-			$this->load->view("Head",$Head);
+			$this->load->model("Inicio_Model");			
+			$this->load->view("Head",$this->_Head());
 			$Productos = new stdClass();
 			$Productos->Herramienta = $this->Inicio_Model->Obtener_Producto($value);
 			//print_r($Productos->Herramienta);
@@ -301,18 +271,8 @@ class Inicio extends CI_Controller {
 	}
 
 	public function Productos($pagina = "",$value = ""){
-		$this->load->model("Inicio_Model");
-		if($this->session->estado==TRUE){
-			$Head = new stdClass();
-			$Head->Cantidad = $this->Inicio_Model->Cantidad_Carro($this->session->rut);
-		}else{ 
-			$Head = new stdClass();
-			$Head->Cantidad = 0;
-		}
-		$Head->Sucursal = $this->Inicio_Model->Sucursal($this->session->sucursal);
-		$Head->Sucursales = $this->Inicio_Model->Obtener_Sucursales();
-		$Head->Categorias = $this->Inicio_Model->Obtener_Categorias();
-		$this->load->view("Head",$Head);
+		$this->load->model("Inicio_Model");		
+		$this->load->view("Head",$this->_Head());
 		$Productos = new stdClass();
 		$Productos->Herramientas = $this->Inicio_Model->Obtener_Productos($value);
 		$Productos->ID = $value;
@@ -324,9 +284,9 @@ class Inicio extends CI_Controller {
 	public function CerrarSesion(){
 		if($this->session->estado==TRUE){
 			$this->load->model("Inicio_Model");
-			$output = $this->Inicio_Model->Verificar_Carrito();
+			$output = $this->Inicio_Model->Verificar_Carro();
 			if($output!=FALSE){
-				$this->Inicio_Model->Limpiar_Carrito();				
+				$this->Inicio_Model->Limpiar_Carro();				
 			}
 			$this->session->sess_destroy();
 			redirect(base_url());

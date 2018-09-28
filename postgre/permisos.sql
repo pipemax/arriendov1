@@ -32,7 +32,13 @@ GRANT SELECT ON public.sucursal TO pipemax;
 GRANT SELECT ON public.carrito TO pipemax;
 GRANT SELECT ON public.sucursal_herramienta TO pipemax;
 GRANT INSERT ON public.usuario TO pipemax;
-
+GRANT INSERT ON public.carrito TO pipemax;
+GRANT UPDATE ON public.carrito TO pipemax;
+GRANT DELETE ON public.carrito TO pipemax;
+GRANT USAGE ON SEQUENCE ARRIENDO_AI TO pipemax;
+GRANT INSERT ON public.arriendo TO pipemax;
+GRANT UPDATE ON public.arriendo TO pipemax;
+GRANT INSERT ON public.detalle TO pipemax;
 
 
 

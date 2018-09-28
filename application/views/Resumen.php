@@ -21,13 +21,13 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_arriendo">Fecha Transacción</label>
-                                        <input class="form-control" type="text" id="fecha_arriendo" value="<?=$arriendo[0]->FECHA_ARRIENDO?>" disabled>
+                                        <input class="form-control" type="text" id="fecha_arriendo" value="<?=$arriendo[0]->fecha_arriendo?>" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="form-group">
                                         <label for="sujeto">Arrendatario</label>
-                                        <input class="form-control" type="text" id="sujeto" value="<?=$arriendo[0]->NOMBRES." ".$arriendo[0]->APELLIDOS?>" disabled>
+                                        <input class="form-control" type="text" id="sujeto" value="<?=$arriendo[0]->nombres." ".$arriendo[0]->apellidos?>" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -35,19 +35,19 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_inicio">Fecha Inicio Arriendo</label>
-                                        <input class="form-control" type="text" id="fecha_inicio" value="<?=$arriendo[0]->FECHA_INICIO?>" disabled>
+                                        <input class="form-control" type="text" id="fecha_inicio" value="<?=$arriendo[0]->fecha_inicio?>" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_fin">Fecha Fin Arriendo</label>
-                                        <input class="form-control" type="text" id="fecha_fin" value="<?=$arriendo[0]->FECHA_FINAL?>" disabled>
+                                        <input class="form-control" type="text" id="fecha_fin" value="<?=$arriendo[0]->fecha_final?>" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="sucursal">Sucursal Arrendador</label>
-                                        <input class="form-control" type="text" id="sucursal" value="<?=$arriendo[0]->NOMBRE?>" disabled>
+                                        <input class="form-control" type="text" id="sucursal" value="<?=$arriendo[0]->nombre?>" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -70,17 +70,17 @@
                                             <tr>
                                                 <td class="col-md-1" style="text-align:center">
                                                     <a href="#">
-                                                        <img src="<?=base_url()?>assets/herramientas/<?=$herramienta->URL_FOTO?>" alt="<?=$herramienta->NOMBRE?>">
+                                                        <img src="<?=base_url()?>assets/herramientas/<?=$herramienta->url_foto?>" alt="<?=$herramienta->nombre?>">
                                                     </a>
                                                 </td>
                                                 <td class="col-md-5">
-                                                    <a href="<?=base_url()?>detalle/<?=$herramienta->COD_H?>"><?=$herramienta->NOMBRE?></a>
+                                                    <a href="<?=base_url()?>detalle/<?=$herramienta->cod_h?>"><?=$herramienta->nombre?></a>
                                                 </td>
                                                 <td class="col-md-2" style="text-align:center">
-                                                    <?=$herramienta->CANTIDAD?>
+                                                    <?=$herramienta->cantidad?>
                                                 </td>
-                                                <td class="col-md-2" style="text-align:center">$<?=$herramienta->PRECIO?></td>
-                                                <td class="col-md-2" style="text-align:center" style="text-align:center">$<?=$herramienta->TOTAL_DETALLE?></td>
+                                                <td class="col-md-2" style="text-align:center">$<?=$herramienta->precio?></td>
+                                                <td class="col-md-2" style="text-align:center" style="text-align:center">$<?=$herramienta->total_detalle?></td>
                                                 </td>
                                             </tr>
                                             <?php
@@ -90,7 +90,7 @@
                                         <tfoot>
                                             <tr>
                                                 <th colspan="4">Total</th>
-                                                <th colspan="1" style="text-align:center">$<?=number_format($arriendo[0]->TOTAL, 0,'.', '.')?></th>
+                                                <th colspan="1" style="text-align:center">$<?=number_format($arriendo[0]->total, 0,'.', '.')?></th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -126,11 +126,11 @@
                                 <tbody>
                                     <tr>
                                         <td>Sub-total</td>
-                                        <th id="subtotal">$<?=number_format($arriendo[0]->TOTAL-($arriendo[0]->TOTAL*0.19), 0,'.', '.')?></th>
+                                        <th id="subtotal">$<?=number_format($arriendo[0]->total-($arriendo[0]->total*0.19), 0,'.', '.')?></th>
                                     </tr>
                                     <tr>
                                         <td>Cálculo IVA</td>
-                                        <th id="iva">$<?=number_format(($arriendo[0]->TOTAL*0.19), 0,'.', '.')?></th>
+                                        <th id="iva">$<?=number_format(($arriendo[0]->total*0.19), 0,'.', '.')?></th>
                                     </tr>
                                     <tr>
                                         <td>IVA</td>
@@ -138,7 +138,7 @@
                                     </tr>
                                     <tr class="total">
                                         <td>Total</td>
-                                        <th id="total2">$<?=number_format($arriendo[0]->TOTAL, 0,'.', '.')?></th>
+                                        <th id="total2">$<?=number_format($arriendo[0]->total, 0,'.', '.')?></th>
                                     </tr>
                                 </tbody>
                             </table>

@@ -42,7 +42,7 @@
                         <div class="row" id="productMain">
                             <div class="col-sm-6">
                                 <div id="mainImage">
-                                    <img src="<?=base_url()?>assets/herramientas/<?=$Herramienta[0]->url_foto?>" alt="" class="img-responsive">
+                                    <img src="<?=base_url()?>assets/herramientas/<?=$Herramienta[0]->url_foto?>" alt="" class="img-responsive" width="100%">
                                 </div>
 
                                 <?php if($Herramienta[0]->stock>0){ ?>

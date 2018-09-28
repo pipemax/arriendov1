@@ -14,7 +14,7 @@
             <div class="col-md-9" id="basket">
                 <div class="box">
                     <h1>Carro de Arriendos</h1>
-                    <p class="text-muted">Actualmente tienes <?=$Cantidad[0]->CANTIDAD?> item(s) en el carro.</p>
+                    <p class="text-muted">Actualmente tienes <?=$Cantidad[0]->cantidad?> item(s) en el carro.</p>
                     <div class="table-responsive">
                         <table class="table table-responsive">
                             <thead>
@@ -34,20 +34,20 @@
                                 <tr>
                                     <td class="col-md-1" style="text-align:center">
                                         <a href="#">
-                                            <img src="<?=base_url()?>assets/herramientas/<?=$herramienta->URL_FOTO?>" alt="<?=$herramienta->NOMBRE?>">
+                                            <img src="<?=base_url()?>assets/herramientas/<?=$herramienta->url_foto?>" alt="<?=$herramienta->nombre?>">
                                         </a>
                                     </td>
                                     <td class="col-md-5">
-                                        <a href="<?=base_url()?>detalle/<?=$herramienta->COD_HERRAMIENTA?>"><?=$herramienta->NOMBRE?></a>
+                                        <a href="<?=base_url()?>detalle/<?=$herramienta->cod_herramienta?>"><?=$herramienta->nombre?></a>
                                     </td>
                                     <td class="col-md-1">
-                                        <input type="number" id="<?=$herramienta->COD_HERRAMIENTA?>-cantidad" style="width:100%" value="<?=$herramienta->CANTIDAD?>" min="1" max="<?=$herramienta->STOCK?>" class="form-control cantidad">
-                                        <input class="hidden" id="<?=$herramienta->COD_HERRAMIENTA?>-respaldo" value="<?=$herramienta->CANTIDAD?>">
+                                        <input type="number" id="<?=$herramienta->cod_herramienta?>-cantidad" style="width:100%" value="<?=$herramienta->cantidad?>" min="1" max="<?=$herramienta->stock?>" class="form-control cantidad">
+                                        <input class="hidden" id="<?=$herramienta->cod_herramienta?>-respaldo" value="<?=$herramienta->cantidad?>">
                                     </td>
-                                    <td class="col-md-1" style="text-align:center">$<?=$herramienta->PRECIO?></td>
-                                    <input class="hidden" id="<?=$herramienta->COD_HERRAMIENTA?>-precio" value="<?=$herramienta->PRECIO?>">
-                                    <td class="col-md-1" id="<?=$herramienta->COD_HERRAMIENTA?>-total" style="text-align:center" style="text-align:center">$<?=$herramienta->TOTAL?></td>
-                                    <td class="col-md-1" style="text-align:center"><button type="button" class="btn btn-default eliminar_h" value="<?=$herramienta->COD_HERRAMIENTA?>"><i class="fa fa-trash-o"></i></button>
+                                    <td class="col-md-1" style="text-align:center">$<?=$herramienta->precio?></td>
+                                    <input class="hidden" id="<?=$herramienta->cod_herramienta?>-precio" value="<?=$herramienta->precio?>">
+                                    <td class="col-md-1" id="<?=$herramienta->cod_herramienta?>-total" style="text-align:center" style="text-align:center">$<?=$herramienta->total?></td>
+                                    <td class="col-md-1" style="text-align:center"><button type="button" class="btn btn-default eliminar_h" value="<?=$herramienta->cod_herramienta?>"><i class="fa fa-trash-o"></i></button>
                                     </td>
                                 </tr>
                                 <?php
