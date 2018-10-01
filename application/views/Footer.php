@@ -149,20 +149,19 @@
 
         $('#fecha_inicial').datepicker({
             startDate: new Date(),
-            language: "es",
-            todayHighlight: true
+            language: "es"
         });
 
         $('#fecha_final').datepicker({
-            startDate: '<?php date_default_timezone_set('America/Santiago');
-                            echo date("d/m/Y", strtotime("+1 day"))?>',
+            startDate: new Date('<?php date_default_timezone_set('America/Santiago');
+                            echo date("d/m/Y", strtotime("+1 day"))?>'),
             language: "es"            
         });
 
-        $("#guardar_fecha").click(function(){
+        $("#guardar_fecha").click(function(){            
             var inicio = $("#fecha_inicial").val();
             var final = $("#fecha_final").val();
-            if(final<=inicio){
+            if(new Date(final).getTime()<=new Date(inicio).getTime()){
                 swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
             }else{
                 $.ajax({

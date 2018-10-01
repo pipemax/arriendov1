@@ -3,7 +3,6 @@
 <div id="all">
         <div id="content">
             <div class="row" style="padding-left: 10px; padding-right: 10px; margin-left: 0px; margin-right: 0px;">
-
                 <div class="col-md-12">
                     <ul class="breadcrumb">
                         <li><a href="<?=base_url()?>">Inicio</a>

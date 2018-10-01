@@ -1,29 +1,46 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <div id="all">
     <div id="content">
-        <div class="container">
-
-            <div class="col-md-12">
-                <ul class="breadcrumb">
-                    <li><a href="<?=base_url()?>">Inicio</a>
-                    </li>
-                    <li>Carrito de Arriendos</li>
-                </ul>
-            </div>
-
+        <div class="col-md-12">
+            <ul class="breadcrumb">
+                <li><a href="<?=base_url()?>">Inicio</a>
+                </li>
+                <li>Carrito de Arriendos</li>
+            </ul>
+        </div>
+        <div class="row"> 
             <div class="col-md-9" id="basket">
                 <div class="box">
                     <h1>Carro de Arriendos</h1>
                     <p class="text-muted">Actualmente tienes <?=$Cantidad[0]->cantidad?> item(s) en el carro.</p>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4 products-showing">
+                            <label for="fecha_inicial2">Fecha inicial del arriendo</label>
+                            <input class="form-control" type="text" id="fecha_inicial2" value="<?=$this->session->inicio?>" readonly>
+                        </div>
+                        <div class="col-sm-12 col-md-4 products-showing">
+                            <label for="fecha_final2">Fecha final del arriendo</label>
+                            <input class="form-control" type="text" id="fecha_final2" value="<?=$this->session->fin?>" readonly>
+                        </div>
+                        <div class="col-sm-12 col-md-4 products-showing">
+                            <label for="cant_dias">Cantidad de días del arriendo</label>
+                            <?php 
+                                $date1 = DateTime::createFromFormat('d/m/Y', $this->session->inicio);
+                                $date2 = DateTime::createFromFormat('d/m/Y', $this->session->fin);
+                            ?>
+                            <input class="form-control" type="text" id="cant_dias" value="<?=$date2->diff($date1)->format("%a");?>" readonly>
+                        </div>     
+                    </div>
+                    <br>
                     <div class="table-responsive">
                         <table class="table table-responsive">
                             <thead>
                                 <tr>
                                     <th class="col-md-1" style="text-align:center">Herramienta</th>
-                                    <th class="col-md-5" style="text-align:center"></th>
+                                    <th class="col-md-4" style="text-align:center"></th>
                                     <th class="col-md-1" style="text-align:center">Cantidad</th>
-                                    <th class="col-md-1" style="text-align:center">Precio Unitario</th>
-                                    <th class="col-md-1" style="text-align:center">Total</th>
+                                    <th class="col-md-1" style="text-align:center">Precio unitario</th>
+                                    <th class="col-md-1" style="text-align:center">Total </th>
                                     <th class="col-md-1" style="text-align:center"></th>
                                 </tr>
                             </thead>
@@ -37,7 +54,7 @@
                                             <img src="<?=base_url()?>assets/herramientas/<?=$herramienta->url_foto?>" alt="<?=$herramienta->nombre?>">
                                         </a>
                                     </td>
-                                    <td class="col-md-5">
+                                    <td class="col-md-4">
                                         <a href="<?=base_url()?>detalle/<?=$herramienta->cod_herramienta?>"><?=$herramienta->nombre?></a>
                                     </td>
                                     <td class="col-md-1">
@@ -47,7 +64,7 @@
                                     <td class="col-md-1" style="text-align:center">$<?=$herramienta->precio?></td>
                                     <input class="hidden" id="<?=$herramienta->cod_herramienta?>-precio" value="<?=$herramienta->precio?>">
                                     <td class="col-md-1" id="<?=$herramienta->cod_herramienta?>-total" style="text-align:center" style="text-align:center">$<?=$herramienta->total?></td>
-                                    <td class="col-md-1" style="text-align:center"><button type="button" class="btn btn-default eliminar_h" value="<?=$herramienta->cod_herramienta?>"><i class="fa fa-trash-o"></i></button>
+                                    <td class="col-md-1" style="text-align:center"><button type="button" class="btn btn-default btn-xs eliminar_h" value="<?=$herramienta->cod_herramienta?>"><i class="fa fa-trash-o"></i></button>
                                     </td>
                                 </tr>
                                 <?php
@@ -75,11 +92,6 @@
                     </div>
                 </div>
                 <!-- /.box -->
-
-
-                
-
-
             </div>
             <!-- /.col-md-9 -->
 
@@ -89,17 +101,22 @@
                         <h3>Resumen de la orden</h3>
                     </div>
                     <p class="text-muted" style="text-align: justify">Debe recordar que la orden se genera con las fechas indicadas por usted, en caso de no cumplir las fechas, cancelaremos la orden.</p>
-
+                    
                     <div class="table-responsive">
+                        <?php $cantidad_dias = $date2->diff($date1)->format("%a"); ?>
                         <table class="table">
                             <tbody>
                                 <tr>
+                                    <td>Cantidad de días</td>
+                                    <th id="n_dias"><?=$cantidad_dias;?></th>
+                                </tr>
+                                <tr>
                                     <td>Sub-total</td>
-                                    <th id="subtotal">$<?=number_format($Total-($Total*0.19), 0,'.', '.')?></th>
+                                    <th id="subtotal">$<?=number_format(($Total-($Total*0.19))*$cantidad_dias, 0,'.', '.')?></th>
                                 </tr>
                                 <tr>
                                     <td>Cálculo IVA</td>
-                                    <th id="iva">$<?=number_format(($Total*0.19), 0,'.', '.')?></th>
+                                    <th id="iva">$<?=number_format(($Total*0.19)*$cantidad_dias, 0,'.', '.')?></th>
                                 </tr>
                                 <tr>
                                     <td>IVA</td>
@@ -107,7 +124,7 @@
                                 </tr>
                                 <tr class="total">
                                     <td>Total</td>
-                                    <th id="total2">$<?=number_format($Total, 0,'.', '.')?></th>
+                                    <th id="total2">$<?=number_format($Total*$cantidad_dias, 0,'.', '.')?></th>
                                 </tr>
                             </tbody>
                         </table>
@@ -115,9 +132,7 @@
                 </div>
             </div>
             <!-- /.col-md-3 -->
-
         </div>
-        <!-- /.container -->
     </div>
     <!-- /#content -->
 
@@ -203,14 +218,15 @@
             });
 
             function Actualizar_Total(){
+                var n_dias = <?=$cantidad_dias?>;
                 $.ajax({
                     url: "<?=base_url()?>total-carro",
                     type: "get",
                     success: function(data){
                         $("#total").html("$"+addCommas(data));                        
-                        $("#subtotal").html("$"+addCommas(Math.round(data-(data*0.19))));
-                        $("#iva").html("$"+addCommas(Math.round(data*0.19)));
-                        $("#total2").html("$"+addCommas(data));                        
+                        $("#subtotal").html("$"+addCommas(Math.round((data-(data*0.19))*n_dias)));
+                        $("#iva").html("$"+addCommas(Math.round(data*0.19)*n_dias));
+                        $("#total2").html("$"+addCommas(data*n_dias));                        
                     }
                 });
             }

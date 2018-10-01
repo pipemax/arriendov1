@@ -1,159 +1,169 @@
-﻿DROP TABLE DETALLE;
-DROP SEQUENCE ARRIENDO_AI;
-DROP SEQUENCE CATEGORIA_AI;
-DROP SEQUENCE SUCURSAL_AI;
-DROP TABLE SUCURSAL_HERRAMIENTA;
-DROP TABLE ARRIENDO;
-DROP TABLE USUARIO;
-DROP TABLE SUCURSAL;
-DROP TABLE HERRAMIENTA;
-DROP TABLE CATEGORIA;
-DROP TABLE CARRITO;
+﻿drop table detalle;
+drop sequence arriendo_ai;
+drop sequence categoria_ai;
+drop sequence sucursal_ai;
+drop table sucursal_herramienta;
+drop table arriendo;
+drop table usuario;
+drop table sucursal;
+drop table herramienta;
+drop table categoria;
+drop table carrito;
+drop table empresa;
 
-
-CREATE TABLE USUARIO(
-    RUT INT,
-    NOMBRES VARCHAR(40),
-    APELLIDOS VARCHAR(40),
-    CORREO VARCHAR(50),
-    ROL VARCHAR(20),
-    PASS VARCHAR(100),
-    ESTADO INT,
-    DIRECCION VARCHAR(50),
-    CELULAR INT
+create table usuario(
+    rut int,
+    nombres varchar(40),
+    apellidos varchar(40),
+    correo varchar(50),
+    rol varchar(20),
+    pass varchar(100),
+    estado int,
+    direccion varchar(50),
+    celular int
 );
 
-CREATE SEQUENCE ARRIENDO_AI
-    MINVALUE 1
-    START WITH 1
-    INCREMENT BY 1
-    CACHE 30;    
+drop sequence arriendo_ai;
+create sequence arriendo_ai;   
     
-CREATE SEQUENCE CATEGORIA_AI
-    MINVALUE 1
-    START WITH 1
-    INCREMENT BY 1
-    CACHE 30;
-    
-CREATE SEQUENCE SUCURSAL_AI
-    MINVALUE 1
-    START WITH 1
-    INCREMENT BY 1
-    CACHE 30;
+drop sequence categoria_ai;
+create sequence categoria_ai;   
+ 
+drop sequence sucursal_ai;
+create sequence sucursal_ai;
 
-CREATE SEQUENCE EMPRESA_AI
-    MINVALUE 1
-    START WITH 1
-    INCREMENT BY 1
-    CACHE 30;
+drop sequence empresa_ai;
+create sequence empresa_ai;
 
-CREATE TABLE ARRIENDO(
-    COD_ARRIENDO INT,
-    FECHA_INICIO DATE,
-    FECHA_FINAL DATE,
-    TOTAL INT,
-    RUT_U INT,
-    COD_S INT,
-    ESTADO VARCHAR(20),
-    FECHA_ARRIENDO DATE
+create table arriendo(
+    cod_arriendo int,
+    fecha_inicio date,
+    fecha_final date,
+    total int,
+    rut_u int,
+    cod_s int,
+    estado varchar(20),
+    fecha_arriendo date
 );
---ALTER TABLE ARRIENDO ADD FECHA_ARRIENDO DATE;
+--alter table arriendo add fecha_arriendo date;
 
-CREATE TABLE DETALLE(
-    COD_H INT,
-    CANTIDAD INT,
-    TOTAL_DETALLE INT,
-    ID_A INT
+create table detalle(
+    cod_h int,
+    cantidad int,
+    total_detalle int,
+    id_a int
 );
 
-CREATE TABLE HERRAMIENTA(
-    COD_HERRAMIENTA INT,
-    NOMBRE VARCHAR(100),
-    DESCRIPCION VARCHAR(200),
-    URL_FOTO VARCHAR(100),
-    COD_CATEGORIA INT
+create table herramienta(
+    cod_herramienta int,
+    nombre varchar(100),
+    descripcion varchar(200),
+    url_foto varchar(100),
+    cod_categoria int
 );
 
-CREATE TABLE SUCURSAL_HERRAMIENTA(
-    COD_HERRAMIENTA INT,
-    COD_SUCURSAL INT,
-    STOCK INT,
-    PRECIO INT
+create table sucursal_herramienta(
+    cod_herramienta int,
+    cod_sucursal int,
+    stock int,
+    precio int
 );
---ALTER TABLE SUCURSAL_HERRAMIENTA ADD PRECIO INT;
---ALTER TABLE HERRAMIENTA MODIFY NOMBRE VARCHAR(50);
+--alter table sucursal_herramienta add precio int;
+--alter table herramienta modify nombre varchar(50);
 
-CREATE TABLE CATEGORIA(
-    COD_CATEGORIA INT,
-    NOMBRE VARCHAR(30)
-);
-
-CREATE TABLE SUCURSAL(
-    COD_SUCURSAL INT,
-    NOMBRE VARCHAR(30),
-    DIRECCION VARCHAR(100),
-    TELEFONO INT,
-    URL_FOTO VARCHAR(100),
-    COD_EMPRESA INT,
-    REGION INT,
-    CIUDAD VARCHAR(50)
+create table categoria(
+    cod_categoria int,
+    nombre varchar(30)
 );
 
---ALTER TABLE SUCURSAL ADD COD_EMPRESA INT;
-
-CREATE TABLE CARRITO(
-    COD_HERRAMIENTA INT,
-    COD_SUCURSAL INT,
-    RUT INT,
-    CANTIDAD INT,
-    TOTAL INT
+create table sucursal(
+    cod_sucursal int,
+    nombre varchar(30),
+    direccion varchar(100),
+    telefono int,
+    url_foto varchar(100),
+    cod_empresa int,
+    comuna int
 );
 
-CREATE TABLE EMPRESA(
-    COD_EMPRESA INT,
-    NOMBRE VARCHAR(100)
+--alter table sucursal add column comuna int;
+--alter table sucursal add cod_empresa int;
+
+create table carrito(
+    cod_herramienta int,
+    cod_sucursal int,
+    rut int,
+    cantidad int,
+    total int
 );
 
---ALTER TABLE CARRITO ADD COD_SUCURSAL INT;
+create table empresa(
+    cod_empresa int,
+    nombre varchar(100)
+);
 
---ALTER TABLE PRIMARY KEY
+create table region(
+    region_id int,
+    region_nombre varchar(50)
+);
+
+create table provincia(
+    provincia_id int,
+    provincia_nombre varchar(50),
+    provincia_region_id int
+);
+
+create table comuna(
+    comuna_id int,
+    comuna_nombre varchar(50),
+    comuna_provincia_id int
+);
+
+--alter table carrito add cod_sucursal int;
+
+--alter table primary key
 /*
-    DROP CONSTRAINT PK_USUARIO;
-    DROP CONSTRAINT PK_ARRIENDO;
-    DROP CONSTRAINT PK_DETALLE;
-    DROP CONSTRAINT PK_HERRAMIENTA;
-    DROP CONSTRAINT PK_CATEGORIA;
-    DROP CONSTRAINT PK_SUCURSAL;
+    drop constraint pk_usuario;
+    drop constraint pk_arriendo;
+    drop constraint pk_detalle;
+    drop constraint pk_herramienta;
+    drop constraint pk_categoria;
+    drop constraint pk_sucursal;
 
 */
-ALTER TABLE USUARIO ADD CONSTRAINT PK_USUARIO PRIMARY KEY(RUT);
-ALTER TABLE ARRIENDO ADD CONSTRAINT PK_ARRIENDO PRIMARY KEY(COD_ARRIENDO);
-ALTER TABLE DETALLE ADD CONSTRAINT PK_DETALLE PRIMARY KEY(COD_H,ID_A);
-ALTER TABLE HERRAMIENTA ADD CONSTRAINT PK_HERRAMIENTA PRIMARY KEY(COD_HERRAMIENTA);
-ALTER TABLE CATEGORIA ADD CONSTRAINT PK_CATEGORIA PRIMARY KEY(COD_CATEGORIA);
-ALTER TABLE SUCURSAL ADD CONSTRAINT PK_SUCURSAL PRIMARY KEY(COD_SUCURSAL);
-ALTER TABLE CARRITO ADD CONSTRAINT PK_CARRITO PRIMARY KEY(COD_HERRAMIENTA,RUT);
-ALTER TABLE SUCURSAL_HERRAMIENTA ADD CONSTRAINT PK_SUCURSAL_HERRAMIENTA PRIMARY KEY(COD_HERRAMIENTA,COD_SUCURSAL);
-ALTER TABLE EMPRESA ADD CONSTRAINT PK_EMPRESA PRIMARY KEY(COD_EMPRESA);
+alter table usuario add constraint pk_usuario primary key(rut);
+alter table arriendo add constraint pk_arriendo primary key(cod_arriendo);
+alter table detalle add constraint pk_detalle primary key(cod_h,id_a);
+alter table herramienta add constraint pk_herramienta primary key(cod_herramienta);
+alter table categoria add constraint pk_categoria primary key(cod_categoria);
+alter table sucursal add constraint pk_sucursal primary key(cod_sucursal);
+alter table carrito add constraint pk_carrito primary key(cod_herramienta,rut);
+alter table sucursal_herramienta add constraint pk_sucursal_herramienta primary key(cod_herramienta,cod_sucursal);
+alter table empresa add constraint pk_empresa primary key(cod_empresa);
+alter table region add constraint pk_region primary key(region_id);
+alter table provincia add constraint pk_provincia primary key(provincia_id);
+alter table comuna add constraint pk_comuna primary key(comuna_id);
 
-
---ALTER TABLE FOREIGN KEY
+--alter table foreign key
 /*
-    DROP CONSTRAINT FK_USUARIO;
-    DROP CONSTRAINT FK_SUCURSAL;
-    DROP CONSTRAINT FK_ARRIENDO;
-    DROP CONSTRAINT FK_HERRAMIENTA;
-    DROP CONSTRAINT FK_CATEGORIA;
+    drop constraint fk_usuario;
+    drop constraint fk_sucursal;
+    drop constraint fk_arriendo;
+    drop constraint fk_herramienta;
+    drop constraint fk_categoria;
 */
 
-ALTER TABLE ARRIENDO ADD CONSTRAINT FK_USUARIO FOREIGN KEY(RUT_U) REFERENCES USUARIO(RUT) ON DELETE CASCADE;
-ALTER TABLE ARRIENDO ADD CONSTRAINT FK_SUCURSAL FOREIGN KEY(COD_S) REFERENCES SUCURSAL(COD_SUCURSAL) ON DELETE CASCADE;
-ALTER TABLE DETALLE ADD CONSTRAINT FK_ARRIENDO FOREIGN KEY(ID_A) REFERENCES ARRIENDO(COD_ARRIENDO) ON DELETE CASCADE;
-ALTER TABLE DETALLE ADD CONSTRAINT FK_HERRAMIENTA FOREIGN KEY(COD_H) REFERENCES HERRAMIENTA(COD_HERRAMIENTA) ON DELETE CASCADE;
-ALTER TABLE HERRAMIENTA ADD CONSTRAINT FK_CATEGORIA FOREIGN KEY(COD_CATEGORIA) REFERENCES CATEGORIA(COD_CATEGORIA) ON DELETE CASCADE;
-ALTER TABLE CARRITO ADD CONSTRAINT FK_CARRITO FOREIGN KEY(RUT) REFERENCES USUARIO(RUT) ON DELETE CASCADE;
-ALTER TABLE CARRITO ADD CONSTRAINT FK_CARRITO1 FOREIGN KEY(COD_HERRAMIENTA) REFERENCES HERRAMIENTA(COD_HERRAMIENTA) ON DELETE CASCADE;
-ALTER TABLE CARRITO ADD CONSTRAINT FK_CARRITO2 FOREIGN KEY(COD_SUCURSAL) REFERENCES SUCURSAL(COD_SUCURSAL) ON DELETE CASCADE;
-ALTER TABLE SUCURSAL_HERRAMIENTA ADD CONSTRAINT FK_SUCURSAL_HERRAMIENTA FOREIGN KEY(COD_HERRAMIENTA) REFERENCES HERRAMIENTA(COD_HERRAMIENTA) ON DELETE CASCADE;
-ALTER TABLE SUCURSAL_HERRAMIENTA ADD CONSTRAINT FJ_SUCURSAL_HERRAMIENTA2 FOREIGN KEY(COD_SUCURSAL) REFERENCES SUCURSAL(COD_SUCURSAL) ON DELETE CASCADE;    
-ALTER TABLE SUCURSAL ADD CONSTRAINT FK_SUCURSAL FOREIGN KEY(COD_EMPRESA) REFERENCES EMPRESA(COD_EMPRESA) ON DELETE CASCADE;
+alter table arriendo add constraint fk_usuario foreign key(rut_u) references usuario(rut) on delete cascade;
+alter table arriendo add constraint fk_sucursal foreign key(cod_s) references sucursal(cod_sucursal) on delete cascade;
+alter table detalle add constraint fk_arriendo foreign key(id_a) references arriendo(cod_arriendo) on delete cascade;
+alter table detalle add constraint fk_herramienta foreign key(cod_h) references herramienta(cod_herramienta) on delete cascade;
+alter table herramienta add constraint fk_categoria foreign key(cod_categoria) references categoria(cod_categoria) on delete cascade;
+alter table carrito add constraint fk_carrito foreign key(rut) references usuario(rut) on delete cascade;
+alter table carrito add constraint fk_carrito1 foreign key(cod_herramienta) references herramienta(cod_herramienta) on delete cascade;
+alter table carrito add constraint fk_carrito2 foreign key(cod_sucursal) references sucursal(cod_sucursal) on delete cascade;
+alter table sucursal_herramienta add constraint fk_sucursal_herramienta foreign key(cod_herramienta) references herramienta(cod_herramienta) on delete cascade;
+alter table sucursal_herramienta add constraint fj_sucursal_herramienta2 foreign key(cod_sucursal) references sucursal(cod_sucursal) on delete cascade;    
+alter table sucursal add constraint fk_sucursal foreign key(cod_empresa) references empresa(cod_empresa) on delete cascade;
+alter table sucursal add constraint fk_sucursal2 foreign key(comuna) references comuna(comuna_id) on delete cascade;
+alter table comuna add constraint fk_comuna foreign key(comuna_provincia_id) references provincia(provincia_id) on delete cascade;
+alter table provincia add constraint fk_provincia foreign key(provincia_region_id) references region(region_id) on delete cascade;

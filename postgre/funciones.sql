@@ -305,6 +305,7 @@ BEGIN
 END; 
 $$ LANGUAGE PLPGSQL;
 
+
 /****************************************************************************************************************************************************************/
 
 CREATE OR REPLACE FUNCTION VERIFICAR_PRODUCTO_VENTA(
@@ -383,6 +384,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 /****************************************************************************************************************************************************************/
+
 SELECT * FROM VALIDAR_LOGIN(123123123,'AAAAAAAA');
 DROP FUNCTION VALIDAR_LOGIN(INT,VARCHAR);
 CREATE OR REPLACE FUNCTION VALIDAR_LOGIN
@@ -403,5 +405,23 @@ BEGIN
             RETURN FALSE;
         WHEN OTHERS THEN
             RETURN FALSE;
+END;
+$$ LANGUAGE PLPGSQL;
+
+/****************************************************************************************************************************************************************/
+
+SELECT * from CALCULO_TOTAL(TO_DATE('02/10/2018','DD/MM/YYYY'),TO_DATE('30/09/2018','DD/MM/YYYY'),1,8990);
+DROP FUNCTION CALCULO_TOTAL(DATE,DATE,INT,INT);
+CREATE OR REPLACE FUNCTION CALCULO_TOTAL(
+    FECHA_F IN DATE,
+    FECHA_I IN DATE,
+    CANTIDAD IN INT,
+    TOTAL IN INT)
+    RETURNS INT AS $$
+DECLARE
+    SUMADOR INT := 0;
+BEGIN    
+    SUMADOR := (TOTAL*CAST(DIFERENCIA AS INT));
+    RETURN SUMADOR;
 END;
 $$ LANGUAGE PLPGSQL;
