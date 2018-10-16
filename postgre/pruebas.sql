@@ -4,17 +4,95 @@ select bool,message from actualizar_user(185756203,'felipe','tapia','ftapia46@gm
 select bool,message from actualizar_password_user(185756203,'maximus');
 select bool,message from nueva_herramienta(1,'algo','buena herramienta','',1)
 select * from usuario;
-select * from arriendo;
-delete from arriendo where cod_arriendo = 4;
+select * from provincia;
+select * from comuna;
+select c.comuna_id, c.comuna_nombre 
+from region r
+join provincia p
+on r.region_id = p.provincia_region_id
+join comuna c
+on c.comuna_id = p.comuna_provincia_id
+where r.region_id = 13;
+select * from arriendo WHERE fecha_inicio between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY')
+                            OR fecha_final between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY');
+select * from detalle;
 select * from carrito;
+select * from arriendo where fecha_arriendo = CAST(NOW() as DATE);
+SELECT C.cod_herramienta, H.nombre, H.url_foto, C.cantidad, SH.stock, C.total, 
+            verificar_producto_venta('09/10/2018','10/10/2018',C.cod_sucursal,C.cod_herramienta) as DISPONIBILIDAD,
+            SH.precio FROM carrito C
+            JOIN herramienta H
+            ON C.cod_herramienta = H.cod_herramienta
+            JOIN sucursal_herramienta SH
+            ON SH.cod_herramienta = H.cod_herramienta
+            WHERE SH.cod_sucursal = 2
+            AND C.rut = 185756203;
+SELECT sum(total) AS total FROM carrito 
+        WHERE rut = 185756203
+        AND cod_sucursal = 2
+        AND cantidad <= verificar_producto_venta('02/10/2018','10/10/2018',cod_sucursal,cod_herramienta);
 SELECT COD_HERRAMIENTA,CANTIDAD,COD_SUCURSAL,TOTAL FROM CARRITO 
 WHERE RUT = 185756203 AND COD_SUCURSAL = 2;
-select * from detalle;
+select * from detalle join arriendo on detalle.id_a=arriendo.cod_arriendo where id_a in (18,23);
+select * from sucursal_herramienta where cod_herramienta = 1594265 and cod_sucursal = 2;
 select * from region;
 select * from comuna where comuna_nombre = 'Talca';
 select * from comuna where comuna_nombre = 'Linares';
 select * from provincia;
 select * from sucursal;
+select * from detalle where cod_h = 1594265;
+
+SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - D.cantidad) AS stock
+FROM herramienta H JOIN categoria C 
+ON H.cod_categoria=C.cod_categoria
+JOIN sucursal_herramienta SH
+ON H.cod_herramienta = SH.cod_herramienta
+JOIN detalle D 
+ON D.cod_h=H.cod_herramienta
+WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                            ON D.cod_h=H.cod_herramienta
+                            WHERE A.fecha_inicio between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY')
+                            OR A.fecha_final between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY'))
+AND SH.cod_sucursal = 2 
+GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock, stock2
+
+
+
+
+SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+(SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+FROM herramienta H JOIN categoria C 
+ON H.cod_categoria=C.cod_categoria
+JOIN sucursal_herramienta SH
+ON H.cod_herramienta = SH.cod_herramienta
+JOIN detalle D 
+ON D.cod_h=H.cod_herramienta
+WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                            ON D.cod_h=H.cod_herramienta
+                            WHERE A.fecha_inicio between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY')
+                            OR A.fecha_final between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY'))
+AND SH.cod_sucursal = 2 
+GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
+UNION 
+SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+FROM herramienta H JOIN categoria C 
+ON H.cod_categoria=C.cod_categoria
+JOIN sucursal_herramienta SH
+ON H.cod_herramienta = SH.cod_herramienta
+FULL OUTER JOIN detalle D 
+ON D.cod_h=H.cod_herramienta
+WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                            ON D.cod_h=H.cod_herramienta
+                            WHERE A.fecha_inicio between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY')
+                            OR A.fecha_final between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY'))
+AND SH.cod_sucursal = 2) as RETORNO
+order by stock ".$stock.",precio ".$precio."
+limit ".$limite->limite."
+offset ".$limite->offset."
+
 
 select bool,message from nueva_categoria('Carpinteria');
 select bool,message from nueva_categoria('Ccompactacion');

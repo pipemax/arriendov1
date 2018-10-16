@@ -141,7 +141,7 @@ BEGIN
     ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
     JOIN DETALLE D 
     ON D.COD_H=H.COD_HERRAMIENTA
-    WHERE H.COD_HERRAMIENTA IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
+    WHERE D.id_a IN (SELECT A.cod_arriendo FROM ARRIENDO A JOIN DETALLE D 
                                     ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
                                     ON D.COD_H=H.COD_HERRAMIENTA
                                     WHERE A.FECHA_INICIO BETWEEN TO_DATE(FECHA_I,'DD/MM/YYYY') AND TO_DATE(FECHA_F,'DD/MM/YYYY')
@@ -308,6 +308,22 @@ $$ LANGUAGE PLPGSQL;
 
 /****************************************************************************************************************************************************************/
 
+CREATE OR REPLACE FUNCTION VERIFICAR_CARRO()
+    RETURNS
+
+/****************************************************************************************************************************************************************/
+SELECT COD_HERRAMIENTA,CANTIDAD,COD_SUCURSAL,TOTAL,verificar_producto_venta('02/10/2018','10/10/2018',2,COD_HERRAMIENTA) as DISPONIBILIDAD FROM CARRITO WHERE RUT = 185756203 AND COD_SUCURSAL = 2 AND ESTADO = 1;
+select * from verificar_producto_venta('09/10/2018','10/10/2018',2,1594265);
+SELECT C.cod_herramienta, H.nombre, H.url_foto, C.cantidad, SH.stock, C.total, 
+            verificar_producto_venta('03/10/2018','10/10/2018',C.cod_sucursal,C.cod_herramienta) as DISPONIBILIDAD,
+            SH.precio FROM carrito C
+            JOIN herramienta H
+            ON C.cod_herramienta = H.cod_herramienta
+            JOIN sucursal_herramienta SH
+            ON SH.cod_herramienta = H.cod_herramienta
+            WHERE SH.cod_sucursal = 2
+            AND C.rut = 185756203;
+
 CREATE OR REPLACE FUNCTION VERIFICAR_PRODUCTO_VENTA(
     FECHA_I IN ARRIENDO.FECHA_INICIO%TYPE,
     FECHA_F IN ARRIENDO.FECHA_FINAL%TYPE,
@@ -332,7 +348,7 @@ BEGIN
         ON H.COD_HERRAMIENTA = SH.COD_HERRAMIENTA
         FULL OUTER JOIN DETALLE D 
         ON D.COD_H=H.COD_HERRAMIENTA
-        WHERE H.COD_HERRAMIENTA IN (SELECT H.COD_HERRAMIENTA FROM ARRIENDO A JOIN DETALLE D 
+        WHERE D.id_a IN (SELECT A.cod_arriendo FROM ARRIENDO A JOIN DETALLE D 
                                     ON A.COD_ARRIENDO=D.ID_A JOIN HERRAMIENTA H
                                     ON D.COD_H=H.COD_HERRAMIENTA
                                     WHERE A.FECHA_INICIO BETWEEN FECHA_I AND FECHA_F
@@ -340,7 +356,6 @@ BEGIN
         AND SH.COD_SUCURSAL = COD_S
         AND SH.COD_HERRAMIENTA = COD_HE
         GROUP BY H.COD_HERRAMIENTA, H.NOMBRE, H.DESCRIPCION, H.URL_FOTO, SH.PRECIO, C.NOMBRE, SH.STOCK
-        HAVING (SH.STOCK - SUM(D.CANTIDAD)) > 0
         UNION 
         SELECT SH.STOCK
         FROM HERRAMIENTA H JOIN CATEGORIA C 
@@ -355,8 +370,8 @@ BEGIN
                                     WHERE A.FECHA_INICIO BETWEEN FECHA_I AND FECHA_F
                                     OR A.FECHA_FINAL BETWEEN FECHA_I AND FECHA_F)
         AND SH.COD_SUCURSAL = COD_S
-        AND SH.COD_HERRAMIENTA = COD_HE
-        AND SH.STOCK > 0) AS TEMPORAL;
+        AND SH.COD_HERRAMIENTA = COD_HE)
+        AS TEMPORAL;
         RETURN CANTIDADES;
     ELSE
         RETURN -1;

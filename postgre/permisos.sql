@@ -39,6 +39,9 @@ GRANT USAGE ON SEQUENCE ARRIENDO_AI TO pipemax;
 GRANT INSERT ON public.arriendo TO pipemax;
 GRANT UPDATE ON public.arriendo TO pipemax;
 GRANT INSERT ON public.detalle TO pipemax;
+GRANT SELECT ON public.region TO pipemax;
+GRANT SELECT ON public.provincia to pipemax;
+GRANT SELECT ON public.comuna to pipemax;
 
 
 

@@ -742,8 +742,7 @@ BEGIN
                         SET CANTIDAD = CANTIDAD_CARRO + CANTIDAD_C
                         WHERE COD_HERRAMIENTA = CODIGO
                         AND RUT = RUT_U
-                        AND COD_SUCURSAL = CODIGO_S;
-                        
+                        AND COD_SUCURSAL = CODIGO_S;                        
                         BOOL := 'TRUE';
                         MESSAGE := 'EL CARRITO SE HA ACTUALIZADO CON ÉXITO';
                     ELSE
@@ -776,7 +775,7 @@ BEGIN
                     MESSAGE := 'LA CANTIDAD DE PRODUCTOS QUE HA SELECCIONADO EXCEDE EL MÁXIMO';
                 ELSE
                     LOCK TABLE CARRITO IN ROW EXCLUSIVE MODE;
-                    INSERT INTO CARRITO (COD_HERRAMIENTA,RUT,CANTIDAD,COD_SUCURSAL) VALUES (CODIGO,RUT_U,CANTIDAD_C,CODIGO_S);                    
+                    INSERT INTO CARRITO (COD_HERRAMIENTA,RUT,CANTIDAD,COD_SUCURSAL,ESTADO) VALUES (CODIGO,RUT_U,CANTIDAD_C,CODIGO_S,1);                    
                     BOOL := 'TRUE';
                     MESSAGE := 'SU CARRITO SE HA ACTUALIZADO CON LOS PRODUCTOS SELECCIONADOS';
                 END IF;

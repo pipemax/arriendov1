@@ -105,6 +105,8 @@
 <script>
     $(document).ready(function(){
 
+        $("#region").val("13");
+
         $("#boton_modal").click(function(){
             var rut = $("#rut_sesion").val();
             var pass = $("#password_sesion").val();
@@ -161,6 +163,37 @@
         $("#guardar_fecha").click(function(){            
             var inicio = $("#fecha_inicial").val();
             var final = $("#fecha_final").val();
+            if(new Date(final).getTime()<=new Date(inicio).getTime()){
+                swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
+            }else{
+                $.ajax({
+                    url: "<?=base_url()?>fechas",
+                    data: {inicio: inicio,fin: final},
+                    type: 'post',
+                    success: function (data){
+                        if(data=='TRUE'){
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#fecha_inicial_i').datepicker({
+            startDate: new Date(),
+            language: "es"
+        });
+
+        $('#fecha_final_i').datepicker({
+            startDate: new Date('<?php date_default_timezone_set('America/Santiago');
+                            echo date("d/m/Y", strtotime("+1 day"))?>'),
+            language: "es"            
+        });
+
+        $("#realizar_busqueda").click(function(){            
+            var inicio = $("#fecha_inicial_i").val();
+            var final = $("#fecha_final_i").val();
+            var busqueda = $("#busqueda").val();
             if(new Date(final).getTime()<=new Date(inicio).getTime()){
                 swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
             }else{

@@ -10,6 +10,9 @@ drop table herramienta;
 drop table categoria;
 drop table carrito;
 drop table empresa;
+drop table region;
+drop table provincia;
+drop table comuna;
 
 create table usuario(
     rut int,
@@ -94,9 +97,9 @@ create table carrito(
     cod_sucursal int,
     rut int,
     cantidad int,
-    total int
+    total int,
+    estado int
 );
-
 create table empresa(
     cod_empresa int,
     nombre varchar(100)

@@ -14,65 +14,91 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 col-xs-12">
+                    <div class="col-md-6 col-xs-12">
                         <div class="form-group">
-                            <label for="ciudad">Seleccione Ciudad</label>
-                            <select class="form-control input-lg" name="ciudad" id="ciudad"></select>
+                            <label for="region">Seleccione Región</label>
+                            <select class="form-control input-lg" name="region" id="region">
+                            <?php 
+                                foreach($regiones as $region)
+                                {
+                            ?>
+                                <option value="<?php echo $region->region_id;?>"> <?php echo $region->region_nombre;?></option>
+                            <?php
+                                }
+
+                            ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label for="comuna">Seleccione Comuna</label>
+                            <select class="form-control input-lg" name="comuna" id="comuna"></select>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
-                            <label for="fecha_b_i">Fecha Arriendo</label>
-                            <input type="text" class="form-control input-lg" id="fecha_b_i" value="<?=$this->session->inicio?>">
+                            <label for="fecha_inicial_i">Fecha Arriendo</label>
+                            <input type="text" class="form-control input-lg" id="fecha_inicial_i" value="<?php echo $this->session->inicio; ?>" readonly>
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
-                            <label for="fecha_b_f">Fecha Devolución</label>
-                            <input type="text" class="form-control input-lg" id="fecha_b_f" value="<?=$this->session->fin?>">
+                            <label for="fecha_final_i">Fecha Devolución</label>
+                            <input type="text" class="form-control input-lg" id="fecha_final_i" value="<?php echo $this->session->fin; ?>" readonly>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group">
-                        <center><button class="btn btn-primary btn-lg">Buscar</button></center>
+                        <center><button class="btn btn-primary btn-lg" id="realizar_busqueda">Buscar</button></center>
                     </div>
                 </div>
             </div> 
             <div class="col-md-3 col-xs-12" style="">
                 <div id="main-slider">
-                    <?php foreach($Arriendos as $item){ ?>
+                    <?php //PHP
+                        foreach($arriendos as $item)
+                        { 
+                    ?>
                         <div class="item">
                             <div class="product" style="border: 0px; margin-bottom: auto; height: auto;">
-                                <a href="<?=base_url()?>detalle/<?=$item->cod_h?>">
-                                    <center><img src="<?=base_url()?>assets/herramientas/<?=$item->url_foto?>" alt="" class="img-responsive" style="height: 253px;"></center>
+                                <a href="<?php echo base_url(); ?>detalle/<?php echo $item->cod_h; ?>">
+                                    <center><img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $item->url_foto; ?>" alt="" class="img-responsive" style="height: 253px;"></center>
                                 </a>
                                 <div class="text" style="padding-bottom: 21px;">
-                                    <h3><a href="<?=base_url()?>detalle/<?=$item->cod_h?>"><?=$item->nombre?></a></h3>
-                                    <p class="price">$<?=number_format($item->precio, 0,'.', '.')?></p>
+                                    <h3><a href="<?php echo base_url(); ?>detalle/<?php echo $item->cod_h; ?>"><?php echo $item->nombre; ?></a></h3>
+                                    <p class="price">$<?php echo number_format($item->precio, 0,'.', '.'); ?></p>
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php 
+                        } 
+                    ?>
                 </div>
             </div>   
             <div class="col-md-3 col-xs-12" style="">
                 <div id="main-slider2">
-                    <?php foreach($Arriendos as $item){ ?>
+                    <?php //PHP
+                        foreach($arriendos as $item)
+                        { 
+                    ?>
                         <div class="item">
                             <div class="product" style="border: 0px; margin-bottom: auto; height: auto;">
-                                <a href="<?=base_url()?>detalle/<?=$item->cod_h?>">
-                                    <center><img src="<?=base_url()?>assets/herramientas/<?=$item->url_foto?>" alt="" class="img-responsive" style="height: 253px;"></center>
+                                <a href="<?php echo base_url(); ?>detalle/<?php echo $item->cod_h; ?>">
+                                    <center><img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $item->url_foto; ?>" alt="" class="img-responsive" style="height: 253px;"></center>
                                 </a>
                                 <div class="text" style="padding-bottom: 21px;">
-                                    <h3><a href="<?=base_url()?>detalle/<?=$item->cod_h?>"><?=$item->nombre?></a></h3>
-                                    <p class="price">$<?=number_format($item->precio, 0,'.', '.')?></p>
+                                    <h3><a href="<?php echo base_url(); ?>detalle/<?php echo $item->cod_h?>"><?php echo $item->nombre; ?></a></h3>
+                                    <p class="price">$<?php echo number_format($item->precio, 0,'.', '.'); ?></p>
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php //PHP
+                        } 
+                    ?>
                 </div>
             </div>             
         </div>
@@ -113,7 +139,10 @@
             </div>
         </div>
 
-        <?php if($Arriendos!=FALSE){ ?>
+        <?php //PHP
+            if($arriendos!=FALSE)
+            { 
+        ?>
         <div id="hot">
             <div class="box">
                 <div class="container">
@@ -125,22 +154,29 @@
 
             <div class="container">
                 <div class="product-slider">
-                    <?php foreach($Arriendos as $item){ ?>
+                    <?php //PHP
+                        foreach($arriendos as $item)
+                        { 
+                    ?>
                         <div class="item">
                             <div class="product">
-                                <a href="<?=base_url()?>detalle/<?=$item->cod_h?>">
-                                    <img src="<?=base_url()?>assets/herramientas/<?=$item->url_foto?>" alt="" class="img-responsive">
+                                <a href="<?php echo base_url(); ?>detalle/<?php echo $item->cod_h; ?>">
+                                    <img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $item->url_foto; ?>" alt="" class="img-responsive">
                                 </a>
                                 <div class="text">
-                                    <h3><a href="<?=base_url()?>detalle/<?=$item->cod_h?>"><?=$item->nombre?></a></h3>
-                                    <p class="price">$<?=number_format($item->precio, 0,'.', '.')?></p>
+                                    <h3><a href="<?php echo base_url(); ?>detalle/<?php echo $item->cod_h; ?>"><?php echo $item->nombre; ?></a></h3>
+                                    <p class="price">$<?php echo number_format($item->precio, 0,'.', '.');?></p>
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php //PHP
+                        } 
+                    ?>
                 </div>
             </div>
         </div>
 
-        <?php } ?>
+        <?php //PHP
+            } 
+        ?>
     </div>

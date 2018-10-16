@@ -14,7 +14,7 @@ class Inicio_Model extends CI_model{
 		}
     }
 
-    function Obtener_Cantidad_Carro($rut){
+    function obtener_cantidad_carro($rut){
         $this->load->database();
         $consulta = "SELECT COUNT(*) as cantidad FROM carrito WHERE rut = ?";
         $output = $this->db->query($consulta,array($rut));
@@ -25,7 +25,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Sucursal($sucursal){
+    function obtener_sucursal($sucursal){
         $this->load->database();
         $consulta = "SELECT cod_sucursal,nombre,direccion,telefono,url_foto FROM sucursal 
                     WHERE cod_sucursal = ?";
@@ -37,7 +37,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Sucursales(){
+    function obtener_sucursales(){
         $this->load->database();
         $consulta = "SELECT cod_sucursal,nombre FROM sucursal";
         $output = $this->db->query($consulta);
@@ -48,7 +48,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Categorias(){
+    function obtener_categorias(){
         $this->load->database();
         $consulta = "SELECT C.cod_categoria,C.nombre, COUNT(H.cod_herramienta) AS contador 
         FROM categoria C
@@ -66,8 +66,8 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Categoria($value){
-        if($value==""){
+    function obtener_categoria($value){
+        if($value==null){
             return "Todas las Herramientas";
         }else{
             $this->load->database();
@@ -86,19 +86,242 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Productos($value){
+    function total_productos($datos, $busqueda = null){
         $this->load->database();
         $output = NULL;
+        $categoria = $datos->categoria;
         $sucursal = $this->session->sucursal;
-        if($value==""){
-            $consulta = "SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+        if($busqueda == null){
+            if($categoria==null){
+                $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+                (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal." 
+                GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
+                UNION 
+                SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                FULL OUTER JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal.") as RETORNO";
+                $output = $this->db->query($consulta);
+            }else{
+                $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+                (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal."
+                AND H.cod_categoria = ?
+                GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
+                UNION
+                SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                FULL OUTER JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal."
+                AND H.cod_categoria = ?) as RETORNO";
+                $output = $this->db->query($consulta,array((int)$categoria,(int)$categoria));
+            }
+        }else{
+            if($categoria==null){
+                $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+                (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal." 
+                AND (LOWER(H.nombre) like '%".strtolower($busqueda)."%'
+                OR LOWER(H.descripcion) like '%".strtolower($busqueda)."%')
+                GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
+                UNION 
+                SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                FULL OUTER JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal."
+                AND (LOWER(H.nombre) like '%".strtolower($busqueda)."%'
+                OR LOWER(H.descripcion) like '%".strtolower($busqueda)."%')) as RETORNO";
+                $output = $this->db->query($consulta);
+            }else{
+                $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+                (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal."
+                AND H.cod_categoria = ?
+                AND LOWER(H.nombre) like '%".strtolower($busqueda)."%'
+                OR LOWER(H.descripcion) like '%".strtolower($busqueda)."%'
+                GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
+                UNION
+                SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+                FROM herramienta H JOIN categoria C 
+                ON H.cod_categoria=C.cod_categoria
+                JOIN sucursal_herramienta SH
+                ON H.cod_herramienta = SH.cod_herramienta
+                FULL OUTER JOIN detalle D 
+                ON D.cod_h=H.cod_herramienta
+                WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                            ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                            ON D.cod_h=H.cod_herramienta
+                                            WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                            OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+                AND SH.cod_sucursal = ".$this->session->sucursal."
+                AND H.cod_categoria = ?
+                AND (LOWER(H.nombre) like '%".strtolower($busqueda)."%'
+                OR LOWER(H.descripcion) like '%".strtolower($busqueda)."%')) as RETORNO";
+                $output = $this->db->query($consulta,array((int)$categoria,(int)$categoria));
+            }
+        }
+        if($output->num_rows()>0){
+            return $output->num_rows();
+        }else{
+            return 0;
+        }
+    }
+
+    function limite_paginacion($pagina, $filas, $items){
+        $limite = $filas;
+        $offset = ($pagina - 1)  * $items;
+        $data = new stdClass();
+        $data->limite = $items;
+        $data->offset = $offset;
+        return $data;
+    }
+
+    function obtener_busqueda($datos,$busqueda){
+        $this->load->database();
+        $output = NULL;
+        $pagina = $datos->pagina;
+        $categoria = $datos->categoria;
+        $stock = $datos->stock;
+        $filas = $datos->filas;
+        $precio = $datos->precio;
+        $sucursal = $this->session->sucursal;
+        $limite = $this->limite_paginacion($pagina,$filas,$datos->items);
+        $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+        (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+        FROM herramienta H JOIN categoria C 
+        ON H.cod_categoria=C.cod_categoria
+        JOIN sucursal_herramienta SH
+        ON H.cod_herramienta = SH.cod_herramienta
+        JOIN detalle D 
+        ON D.cod_h=H.cod_herramienta
+        WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                                    ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                    ON D.cod_h=H.cod_herramienta
+                                    WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                    OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+        AND SH.cod_sucursal = ".$this->session->sucursal." 
+        AND (LOWER(H.nombre) like '%".strtolower($busqueda)."%'
+        OR LOWER(H.descripcion) like '%".strtolower($busqueda)."%')
+        GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock
+        UNION 
+        SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, SH.stock AS stock
+        FROM herramienta H JOIN categoria C 
+        ON H.cod_categoria=C.cod_categoria
+        JOIN sucursal_herramienta SH
+        ON H.cod_herramienta = SH.cod_herramienta
+        FULL OUTER JOIN detalle D 
+        ON D.cod_h=H.cod_herramienta
+        WHERE H.cod_herramienta NOT IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+                                    ON A.cod_arriendo=D.id_a JOIN herramienta H
+                                    ON D.cod_h=H.cod_herramienta
+                                    WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
+                                    OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
+        AND SH.cod_sucursal = ".$this->session->sucursal."
+        AND (LOWER(H.nombre) like '%".strtolower($busqueda)."%'
+        OR LOWER(H.descripcion) like '%".strtolower($busqueda)."%')) as RETORNO
+        order by stock ".$stock.",precio ".$precio."
+        limit ".$limite->limite."
+        offset ".$limite->offset."";
+        $output = $this->db->query($consulta);        
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    function obtener_productos($datos){
+        $this->load->database();
+        $output = NULL;
+        $pagina = $datos->pagina;
+        $categoria = $datos->categoria;
+        $stock = $datos->stock;
+        $filas = $datos->filas;
+        $precio = $datos->precio;
+        $sucursal = $this->session->sucursal;
+        $limite = $this->limite_paginacion($pagina,$filas,$datos->items);
+        if($categoria==null){
+            $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+            (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
             FROM herramienta H JOIN categoria C 
             ON H.cod_categoria=C.cod_categoria
             JOIN sucursal_herramienta SH
             ON H.cod_herramienta = SH.cod_herramienta
             JOIN detalle D 
             ON D.cod_h=H.cod_herramienta
-            WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+            WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
                                         ON A.cod_arriendo=D.id_a JOIN herramienta H
                                         ON D.cod_h=H.cod_herramienta
                                         WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
@@ -118,17 +341,21 @@ class Inicio_Model extends CI_model{
                                         ON D.cod_h=H.cod_herramienta
                                         WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
                                         OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
-            AND SH.cod_sucursal = ".$this->session->sucursal."";
+            AND SH.cod_sucursal = ".$this->session->sucursal.") as RETORNO
+            order by stock ".$stock.",precio ".$precio."
+            limit ".$limite->limite."
+            offset ".$limite->offset."";
             $output = $this->db->query($consulta);
         }else{
-            $consulta = "SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
+            $consulta = "SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, stock FROM
+            (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
             FROM herramienta H JOIN categoria C 
             ON H.cod_categoria=C.cod_categoria
             JOIN sucursal_herramienta SH
             ON H.cod_herramienta = SH.cod_herramienta
             JOIN detalle D 
             ON D.cod_h=H.cod_herramienta
-            WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+            WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
                                         ON A.cod_arriendo=D.id_a JOIN herramienta H
                                         ON D.cod_h=H.cod_herramienta
                                         WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
@@ -150,8 +377,11 @@ class Inicio_Model extends CI_model{
                                         WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
                                         OR A.fecha_final between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY'))
             AND SH.cod_sucursal = ".$this->session->sucursal."
-            AND H.cod_categoria = ?";
-            $output = $this->db->query($consulta,array((int)$value,(int)$value));
+            AND H.cod_categoria = ?) as RETORNO
+            order by stock ".$stock.",precio ".$precio."
+            limit ".$limite->limite."
+            offset ".$limite->offset."";
+            $output = $this->db->query($consulta,array((int)$categoria,(int)$categoria));
         }
         if($output->num_rows()>0){
             return $output->result();
@@ -160,7 +390,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Producto($codigo){
+    function obtener_producto($codigo){
         $this->load->database();
         $output = NULL;
         $consulta = "SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - SUM(D.cantidad)) AS stock
@@ -170,7 +400,7 @@ class Inicio_Model extends CI_model{
         ON H.cod_herramienta = SH.cod_herramienta
         JOIN detalle D 
         ON D.cod_h=H.cod_herramienta
-        WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detalle D 
+        WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
                                     ON A.cod_arriendo=D.id_a JOIN herramienta H
                                     ON D.cod_h=H.cod_herramienta
                                     WHERE A.fecha_inicio between to_date('".$this->session->inicio."', 'DD/MM/YYYY') AND to_date('".$this->session->fin."', 'DD/MM/YYYY')
@@ -203,7 +433,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Validar_Sesion($rut,$pass){
+    function validar_sesion($rut,$pass){
         $this->load->database();
         $procedimiento = "select bool,message from inicio_sesion(?,?);";
         $consulta = $this->db->query($procedimiento,array($rut,$pass));
@@ -211,12 +441,12 @@ class Inicio_Model extends CI_model{
         $respuesta->estado = $consulta->result()[0]->bool;
         $respuesta->mensaje = $consulta->result()[0]->message;   
         if($respuesta->estado=='TRUE'){
-            $this->_AsignarSesion($rut);
+            $this->_asignar_sesion($rut);
         }
         return $respuesta;
     }
 
-    private function _AsignarSesion($rut){
+    private function _asignar_sesion($rut){
         $this->load->database();
         $consulta = "SELECT rut,nombres,apellidos,rol FROM usuario WHERE rut = ?";
         $output = $this->db->query($consulta,array($rut));
@@ -229,7 +459,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Verificar_Carro(){
+    function verificar_carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
             $consulta = "SELECT * FROM carrito WHERE rut = ?";
@@ -244,7 +474,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Verificar_Sucursal_Carro(){
+    function verificar_sucursal_carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
             $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
@@ -259,10 +489,11 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Carro(){
+    function obtener_carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
-            $consulta = "SELECT C.cod_herramienta, H.nombre, H.url_foto, C.cantidad, SH.stock, C.total, 
+            $consulta = "SELECT C.cod_herramienta, H.nombre, H.url_foto, C.cantidad, C.total, 
+            verificar_producto_venta(?,?,C.cod_sucursal,C.cod_herramienta) as disponibilidad,
             SH.precio FROM carrito C
             JOIN herramienta H
             ON C.cod_herramienta = H.cod_herramienta
@@ -270,7 +501,11 @@ class Inicio_Model extends CI_model{
             ON SH.cod_herramienta = H.cod_herramienta
             WHERE SH.cod_sucursal = ?
             AND C.rut = ?";
-            $output = $this->db->query($consulta,array($this->session->sucursal,$this->session->rut));
+            $output = $this->db->query($consulta,array(
+                                                    $this->session->inicio,
+                                                    $this->session->fin,
+                                                    $this->session->sucursal,
+                                                    $this->session->rut));
             if($output->num_rows()>0){
                 return $output->result();
             }else{
@@ -281,7 +516,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Borrar_H_Carrito($datos){
+    function borrar_herramienta_carro($datos){
         $this->load->database();
         $procedimiento = "select bool,message from borrar_herramienta_carrito(?,?,?);";
         $consulta = $this->db->query($procedimiento,array($datos->rut,$datos->codigo,$datos->sucursal));
@@ -291,12 +526,13 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
-    function Obtener_Total_Carro($rut,$sucursal){
+    function obtener_total_carro($rut,$sucursal){
         $this->load->database();
         $consulta = "SELECT sum(total) AS total FROM carrito 
         WHERE rut = ?
-        AND cod_sucursal = ?";
-        $output = $this->db->query($consulta,array($rut,$sucursal));
+        AND cod_sucursal = ?
+        AND cantidad <= verificar_producto_venta(?,?,cod_sucursal,cod_herramienta);";
+        $output = $this->db->query($consulta,array($rut,$sucursal,$this->session->inicio,$this->session->fin));
         if($output->num_rows()>0){
             return $output->result()[0]->total;
         }else{
@@ -305,7 +541,7 @@ class Inicio_Model extends CI_model{
 
     }
 
-    function Agregar_Carro($codigo,$cantidad){
+    function agregar_carro($codigo,$cantidad){
         $this->load->database();
         $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
         $output = $this->db->query($consulta,array($this->session->rut));
@@ -315,7 +551,7 @@ class Inicio_Model extends CI_model{
             if($suc==$this->session->sucursal){
                 $verificador = TRUE;
             }else{
-                $limpiar_carro = $this->Limpiar_Carro();
+                $limpiar_carro = $this->limpiar_carro();
                 if($limpiar_carro->estado==TRUE){
                     $respuesta = new stdClass();
                     $respuesta->estado = 'REFRESH';
@@ -344,7 +580,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Quitar_Carro($codigo,$cantidad){
+    function quitar_carro($codigo,$cantidad){
         $this->load->database();
         $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
         $output = $this->db->query($consulta,array($this->session->rut));
@@ -354,7 +590,7 @@ class Inicio_Model extends CI_model{
             if($suc==$this->session->sucursal){
                 $verificador = TRUE;
             }else{
-                $limpiar_carro = $this->Limpiar_Carro();
+                $limpiar_carro = $this->limpiar_carro();
                 if($limpiar_carro->estado==TRUE){
                     $respuesta = new stdClass();
                     $respuesta->estado = 'REFRESH';
@@ -381,7 +617,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Realizar_Registro($datos){
+    function realizar_registro($datos){
         $this->load->database();
         $procedimiento = "select bool,message from insertar_usuario(?,?,?,?,?,?,?);";
         $consulta = $this->db->query($procedimiento,array($datos->Rut,$datos->Nombres,$datos->Apellidos,$datos->Correo,$datos->Pass,$datos->Direccion,$datos->Telefono));
@@ -391,13 +627,12 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
-    function Limpiar_Carro(){
+    function limpiar_carro(){
         if($this->session->estado==TRUE){
             $rut = $this->session->rut;
             $this->load->database();
             $procedimiento = "select bool,message from vaciar_carrito(?);";
             $consulta = $this->db->query($procedimiento,array($rut));
-            $conexion = oci_connect($this->db->username,$this->db->password,$this->db->hostname);
             $respuesta = new stdClass();
             $respuesta->estado = $consulta->result()[0]->bool;
             $respuesta->mensaje = $consulta->result()[0]->message;                   
@@ -407,7 +642,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Realizar_Arriendo(){
+    function realizar_arriendo(){
         if($this->session->estado==TRUE){
             $rut = $this->session->rut;
             $sucursal = $this->session->sucursal;
@@ -429,7 +664,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
-    function Obtener_Arriendo($value){
+    function obtener_arriendo($value){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
                     to_char(A.fecha_final, 'DD/MM/YYYY') AS fecha_final,A.total,A.rut_U,U.nombres,
@@ -448,7 +683,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Mas_Arrendados(){
+    function obtener_mas_arrendados(){
         $this->load->database();
         $consulta = "SELECT D.cod_h, H.nombre, H.url_foto,SH.precio, COUNT(D.id_a) AS cantidad_arriendos 
         FROM detalle D JOIN herramienta H
@@ -465,7 +700,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Obtener_Detalle($value, $sucursal){
+    function obtener_detalle($value, $sucursal){
         $this->load->database();
         $consulta = "SELECT D.cod_h, H.nombre,H.url_foto,D.cantidad,D.total_detalle,SH.precio 
                     FROM detalle D JOIN herramienta H
@@ -481,9 +716,17 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function Revisar_Conexion($conexion){
-        if($conexion){
-            return TRUE;
+    function obtener_comunas(){
+        $this->load->database();
+        $consulta = "";
+    }
+
+    function obtener_regiones(){
+        $this->load->database();
+        $consulta = "select * from region";
+        $output = $this->db->query($consulta);
+        if($output->num_rows()>0){
+            return $output->result();
         }else{
             return FALSE;
         }
