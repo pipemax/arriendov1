@@ -6,13 +6,34 @@ select bool,message from nueva_herramienta(1,'algo','buena herramienta','',1)
 select * from usuario;
 select * from provincia;
 select * from comuna;
+
+
+select cod_sucursal 
+from sucursal_herramienta
+group by cod_sucursal
+having count(cod_herramienta) > 1;
+
+select re.region_id,re.region_nombre,c.comuna_id 
+from region re join provincia pro
+on re.region_id = pro.provincia_region_id
+join comuna c
+on pro.provincia_id = c.comuna_provincia_id
+join sucursal su
+on c.comuna_id = su.comuna
+group by re.region_id
+
+select * from comuna where comuna_id in (7101,7401);
+
+select * from region;
+
 select c.comuna_id, c.comuna_nombre 
 from region r
 join provincia p
 on r.region_id = p.provincia_region_id
 join comuna c
-on c.comuna_id = p.comuna_provincia_id
+on p.provincia_id = c.comuna_provincia_id
 where r.region_id = 13;
+
 select * from arriendo WHERE fecha_inicio between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY')
                             OR fecha_final between to_date('12/10/2018', 'DD/MM/YYYY') AND to_date('13/10/2018', 'DD/MM/YYYY');
 select * from detalle;

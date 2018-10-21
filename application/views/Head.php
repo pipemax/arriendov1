@@ -44,52 +44,76 @@
     <script src="<?php echo base_url(); ?>assets/js/bootstrap-datepicker.min.js"></script> 
     <script src="<?php echo base_url(); ?>assets/js/bootstrap-datepicker.es.min.js"></script>    
     <script src="<?php echo base_url(); ?>assets/js/URI.min.js"></script>  
+    <script src="<?php echo base_url(); ?>assets/js/moment.js"></script>  
     <link rel="shortcut icon" href="<?php echo base_url(); ?>assets/img/favicon.png">
 </head>
 
 <body>
-
 <div id="top">
-    <div class="container">
-        <div class="col-md-6 offer" data-animate="fadeInDown">  
-            <a href="#" class="btn btn-success btn-sm" data-toggle="modal" data-target="#sucursal-modal">SUCURSAL <?php echo $sucursal[0]->nombre; ?></a>
-        </div>
-        <div class="col-md-6" data-animate="fadeInDown">
+    <div class="row">       
+        <div class="col-md-12">     
+            <div class="col-md-6 col-xs-12" data-animate="fadeInDown">   
+                <div class="row">
+                    <div class="col-md-6 col-xs-12"> 
+                        <div class="input-group" style="width:100%;">
+                            <span class="input-group-addon" style="background-color: rgb(92, 184, 92); border-color: rgb(92, 184, 92); color: white; width: 77px;" id="basic-addon1">Región</span>
+                            <select class="form-control input-sm" name="region_top" id="region_top">
+                                <?php 
+                                    foreach($regiones as $region)
+                                    {
+                                ?>
+                                    <option value="<?php echo $region->region_id;?>"> <?php echo $region->region_nombre;?></option>
+                                <?php
+                                    }
+
+                                ?>
+                            </select>
+                        </div>    
+                    </div>
+                    <div class="col-md-6 col-xs-12">  
+                        <div class="input-group" style="width:100%;">
+                            <span class="input-group-addon" style="background-color: rgb(92, 184, 92); border-color: rgb(92, 184, 92); color: white;  width: 77px;" id="basic-addon1">Comuna</span>
+                            <select class="form-control input-sm" name="comuna_top" id="comuna_top">
+                            </select>
+                        </div>     
+                    </div>
+                </div>                      
+            </div>
+            <div class="col-md-6 col-xs-12" data-animate="fadeInDown">
             <?php //PHP
                 if($this->session->estado==FALSE)
                 { 
             ?>
-                <ul class="menu">
-                    <li>
-                        <a href="#" data-toggle="modal" data-target="#login-modal">Iniciar Sesión</a>
-                    </li>
-                    <li>
-                        <a href="<?php echo base_url(); ?>registrarse">Registrarse</a>
-                    </li>
-                    <li>
-                        <a href="<?php echo base_url(); ?>contacto">Contacto</a>
-                    </li>
-                </ul>
+                <div class="row">
+                    <div class="col-md-6 col-xs-12"></div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="row">
+                            <a class="btn btn-success" data-toggle="modal" data-target="#login-modal">Iniciar Sesión</a>                    
+                            <a class="btn btn-primary" href="<?php echo base_url(); ?>registrarse">Registrarse</a>
+                            <a class="btn btn-danger" href="<?php echo base_url(); ?>contacto">Contacto</a>
+                            </div>
+                    </div>
+                </div>
             <?php //PHP
                 }
                 else
                 {
-            ?>
-                <ul class="menu">
-                    <li>
-                        <a>Bienvenido <?php echo $this->session->nombres." ".$this->session->apellidos; ?></a>
-                    </li>
-                    <li>
-                        <a href="<?php echo base_url(); ?>mi-cuenta">Mi Cuenta</a>
-                    </li>
-                    <li>
-                        <a href="<?php echo base_url(); ?>salir">Cerrar Sesión</a>
-                    </li>
-                </ul>
+            ?>  
+                <div class="row">
+                    <div class="col-md-2 col-xs-12"></div>
+                    <div class="col-md-10 col-xs-12">
+                        <div class="row">
+                            <a class="btn btn-info"> Bienvenid@ <?php echo $this->session->nombres." ".$this->session->apellidos; ?></a>                    
+                            <a class="btn btn-success" href="<?php echo base_url(); ?>mi-cuenta">Mi cuenta</a>
+                            <a class="btn btn-danger" href="<?php echo base_url(); ?>salir">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
             <?php //PHP
                 } 
             ?>
-        </div>
+            </div>    
+        </div> 
     </div>
     <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="Login" aria-hidden="true">
         <div class="modal-dialog modal-sm">
@@ -323,19 +347,60 @@
 
 <script>
     $(document).ready(function(){
-        $("#sucursales").val('<?php echo $sucursal[0]->cod_sucursal?>');
-        $("#sucursal_guardar").click(function(){
-            var sucursal = $("#sucursales").val();
+        $("#region_top").val('<?php echo $this->session->region?>');
+        var region_top = $("#region_top").val();
+        establecerComunaTop(region_top);
+
+        $("#region_top").change(function(){
+            var region = this.value;
+            $("#comuna_top").attr('readonly', true);
+            $("#comuna_top").children().remove();
+            establecerComunaTop(region);
+            select = document.getElementById('comuna_top'); 
+            option = document.createElement('option');
+            option.value = "";
+            option.innerHTML = "Seleccione una comuna";
+            select.append(option);
+            select.value = "";
+        });
+
+        function establecerComunaTop(region){
             $.ajax({
-                url: "<?php echo base_url(); ?>sucursal",
-                data: {sucursal: sucursal},
+                url: "<?=base_url()?>Inicio/obtener_comunas",
+                data: {region: region},
                 type: 'post',
-                success: function (data)                {
-                    if(data=='TRUE')                    {
-                        location.reload();
+                success: function (data){
+                    if(data!=='FALSE'){
+                        var datos = JSON.parse(data);
+                        select = document.getElementById('comuna_top');                       
+                        for(var i=0;i<datos.length;i++){
+                            option = document.createElement('option');
+                            option.value = datos[i].comuna_id;
+                            option.innerHTML = datos[i].comuna_nombre;
+                            select.append(option);
+                        }
+                        $("#comuna_top").attr('readonly', false);    
+                        select.value = '<?php echo $this->session->comuna;?>';        
                     }
                 }
-            });
+            });                        
+        }
+
+        $("#comuna_top").change(function(){
+            var region = $("#region_top").val();
+            var comuna = $("#comuna_top").val();
+            if(comuna!==""){
+                $.ajax({
+                    url: "<?php echo base_url(); ?>comuna",
+                    data: {region: region,comuna: comuna},
+                    type: 'post',
+                    success: function (data){
+                        location.reload();
+                    }
+                });
+            }else{
+                swal("¡Atención!", "Debe seleccionar una comuna en el navegador superior", "error"); 
+            }
         });
     });
 

@@ -474,19 +474,14 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function verificar_sucursal_carro(){
-        if($this->session->estado==TRUE){
-            $this->load->database();
-            $consulta = "SELECT cod_sucursal FROM carrito WHERE rut = ?";
-            $output = $this->db->query($consulta,array($this->session->rut));
-            if($output->num_rows()>0){
-                return $output->result()[0];
-            }else{
-                return FALSE;
-            }
-        }else{
-            return FALSE;
-        }
+    function verificar_comuna_carro($region,$comuna){
+        $this->load->database();
+        $consulta = "select bool,message from verificar_comuna(?,?,?)";
+        $output = $this->db->query($consulta,array($this->session->rut,$region,$comuna));
+        $respuesta = new stdClass();
+        $respuesta->estado = $output->result()[0]->bool;
+        $respuesta->mensaje = $output->result()[0]->message;  
+        return $respuesta;
     }
 
     function obtener_carro(){
@@ -620,7 +615,7 @@ class Inicio_Model extends CI_model{
     function realizar_registro($datos){
         $this->load->database();
         $procedimiento = "select bool,message from insertar_usuario(?,?,?,?,?,?,?);";
-        $consulta = $this->db->query($procedimiento,array($datos->Rut,$datos->Nombres,$datos->Apellidos,$datos->Correo,$datos->Pass,$datos->Direccion,$datos->Telefono));
+        $consulta = $this->db->query($procedimiento,array($datos->rut,$datos->nombres,$datos->apellidos,$datos->correo,$datos->pass,$datos->direccion,$datos->telefono));
         $respuesta = new stdClass();
         $respuesta->estado = $consulta->result()[0]->bool;
         $respuesta->mensaje = $consulta->result()[0]->message;                   
@@ -716,14 +711,44 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    function obtener_comunas(){
+    function obtener_comunas($region){
         $this->load->database();
-        $consulta = "";
+        $consulta = "select c.comuna_id, c.comuna_nombre 
+                    from region r
+                    join provincia p
+                    on r.region_id = p.provincia_region_id
+                    join comuna c
+                    on p.provincia_id = c.comuna_provincia_id
+                    join sucursal su
+                    on c.comuna_id = su.comuna
+                    where su.cod_sucursal in (select cod_sucursal 
+                                            from sucursal_herramienta
+                                            group by cod_sucursal
+                                            having count(cod_herramienta) > 1)
+                    and r.region_id = ?
+                    order by c.comuna_nombre";
+        $output = $this->db->query($consulta,array($region));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
     }
 
     function obtener_regiones(){
         $this->load->database();
-        $consulta = "select * from region";
+        $consulta = "select re.region_id,re.region_nombre 
+                    from region re join provincia pro
+                    on re.region_id = pro.provincia_region_id
+                    join comuna c
+                    on pro.provincia_id = c.comuna_provincia_id
+                    join sucursal su
+                    on c.comuna_id = su.comuna
+                    where su.cod_sucursal in (select cod_sucursal 
+                                            from sucursal_herramienta
+                                            group by cod_sucursal
+                                            having count(cod_herramienta) > 1)
+                    group by re.region_id";
         $output = $this->db->query($consulta);
         if($output->num_rows()>0){
             return $output->result();

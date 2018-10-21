@@ -303,8 +303,6 @@
             arreglar_url("stock",$(this)[0].value); 
         });
 
-
-
         function arreglar_url(nombre_item,valor_item){
             var url = new URI(document.location);
             if(url.hasQuery(nombre_item)===true){

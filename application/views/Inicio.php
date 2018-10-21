@@ -3,60 +3,62 @@
 <div id="all">
     <div id="content">
         <div class="row" style="padding-left: 30px; padding-right: 30px;">
-            <div class="col-md-6 col-xs-12" style="background-color: #FFF157; margin-bottom: 20px;">
-                <h2 style="color: black">¿Qué necesitas para tu proyecto?</h2>
-                <div class="row">
-                    <div class="col-md-12 col-xs-12">
-                        <div class="form-group">
-                            <label for="busqueda">Herramienta o Maquinaria</label>
-                            <input type="text" class="form-control input-lg" name="busqueda" id="busqueda" placeholder="Ingrese herramienta o maquinaria">
+            <form id="formulario_inicio">
+                <div class="col-md-6 col-xs-12" style="background-color: #FFF157; margin-bottom: 20px;">
+                    <h2 style="color: black">¿Qué necesitas para tu proyecto?</h2>
+                    <div class="row">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="form-group">
+                                <label for="busqueda">Herramienta o Maquinaria</label>
+                                <input type="text" class="form-control input-lg" name="busqueda" id="busqueda" placeholder="Ingrese herramienta o maquinaria" required>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 col-xs-12">
-                        <div class="form-group">
-                            <label for="region">Seleccione Región</label>
-                            <select class="form-control input-lg" name="region" id="region">
-                            <?php 
-                                foreach($regiones as $region)
-                                {
-                            ?>
-                                <option value="<?php echo $region->region_id;?>"> <?php echo $region->region_nombre;?></option>
-                            <?php
-                                }
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="region">Seleccione Región</label>
+                                <select class="form-control input-lg" name="region" id="region">
+                                <?php 
+                                    foreach($regiones as $region)
+                                    {
+                                ?>
+                                    <option value="<?php echo $region->region_id;?>"> <?php echo $region->region_nombre;?></option>
+                                <?php
+                                    }
 
-                            ?>
-                            </select>
+                                ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="comuna">Seleccione Comuna</label>
+                                <select class="form-control input-lg" name="comuna" id="comuna"></select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-xs-12">
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="fecha_inicial_i">Fecha Arriendo</label>
+                                <input type="text" class="form-control input-lg" id="fecha_inicial_i" value="<?php echo $this->session->inicio; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="fecha_final_i">Fecha Devolución</label>
+                                <input type="text" class="form-control input-lg" id="fecha_final_i" value="<?php echo $this->session->fin; ?>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="form-group">
-                            <label for="comuna">Seleccione Comuna</label>
-                            <select class="form-control input-lg" name="comuna" id="comuna"></select>
+                            <center><button class="btn btn-primary btn-lg" type="submit">Buscar</button></center>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 col-xs-12">
-                        <div class="form-group">
-                            <label for="fecha_inicial_i">Fecha Arriendo</label>
-                            <input type="text" class="form-control input-lg" id="fecha_inicial_i" value="<?php echo $this->session->inicio; ?>" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xs-12">
-                        <div class="form-group">
-                            <label for="fecha_final_i">Fecha Devolución</label>
-                            <input type="text" class="form-control input-lg" id="fecha_final_i" value="<?php echo $this->session->fin; ?>" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <center><button class="btn btn-primary btn-lg" id="realizar_busqueda">Buscar</button></center>
-                    </div>
-                </div>
-            </div> 
+                </div> 
+            </form>
             <div class="col-md-3 col-xs-12" style="">
                 <div id="main-slider">
                     <?php //PHP
@@ -180,3 +182,41 @@
             } 
         ?>
     </div>
+
+    <script>
+        $(document).ready(function(){
+            $("#region").val("<?php echo $this->session->region;?>")
+            var region = $("#region").val();
+            establecerComuna(region);
+
+            $("#region").change(function(){
+                var region = this.value;
+                $("#comuna").attr('readonly', true);
+                $("#comuna").children().remove();
+                establecerComuna(region);
+            });
+
+            function establecerComuna(region){
+                $.ajax({
+                    url: "<?=base_url()?>Inicio/obtener_comunas",
+                    data: {region: region},
+                    type: 'post',
+                    success: function (data){
+                        if(data!=='FALSE'){
+                            var datos = JSON.parse(data);
+                            select = document.getElementById('comuna');                       
+                            for(var i=0;i<datos.length;i++){
+                                option = document.createElement('option');
+                                option.value = datos[i].comuna_id;
+                                option.innerHTML = datos[i].comuna_nombre;
+                                select.append(option);
+                            }
+                            $("#comuna").attr('readonly', false);
+                            select.value = '<?php echo $this->session->comuna;?>';   
+                        }
+                    }
+                });
+            }
+                       
+        });
+    </script>

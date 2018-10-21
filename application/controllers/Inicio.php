@@ -6,9 +6,10 @@ class Inicio extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		if(!isset($this->session->sucursal))
+		if(!isset($this->session->region))
 		{
-			$this->session->sucursal = 2;
+			$this->session->region = 7;
+			$this->session->comuna = 7101;
 			date_default_timezone_set('America/Santiago');
 			$fecha_hoy = strtotime("now");
 			$fecha_manana = strtotime("+1 day");
@@ -29,6 +30,8 @@ class Inicio extends CI_Controller
 			$head = new stdClass();
 			$head->cantidad = 0;
 		}
+		$head->regiones = $this->Inicio_model->obtener_regiones();
+		$head->comunas = $this->Inicio_model->obtener_comunas($this->session->region);
 		$head->sucursal = $this->Inicio_model->obtener_sucursal($this->session->sucursal);
 		$head->sucursales = $this->Inicio_model->obtener_sucursales();
 		$head->categorias = $this->Inicio_model->obtener_categorias();
@@ -51,14 +54,15 @@ class Inicio extends CI_Controller
 		if($this->input->post('region'))
 		{
 			$this->load->model("Inicio_model");
-			$output = $this->Inicio_model->obtener_comunas();
+			$region = $this->input->post('region');
+			$output = $this->Inicio_model->obtener_comunas($region);
 			if($output!=FALSE)
 			{
 				echo json_encode($output);
 			}
 			else
 			{
-				redirect(base_url());
+				echo 'FALSE';
 			}
 		}	
 		else
@@ -81,6 +85,47 @@ class Inicio extends CI_Controller
 		else
 		{
 			redirect(base_url());
+		}
+	}
+
+	public function comuna()
+	{
+		if($this->input->post('region'))
+		{
+			if($this->input->post('comuna'))
+			{
+				$region = $this->input->post('region');
+				$comuna = $this->input->post('comuna');
+				if($region!="" && $comuna!="")
+				{
+					$this->load->model("Inicio_model");
+					$output = $this->Inicio_model->verificar_carro();
+					if($output!=FALSE)
+					{
+						$output2 = $this->Inicio_model->verificar_comuna_carro($region,$comuna);
+						if($this->session->estado==TRUE && $output2->estado=='TRUE')
+						{
+							$this->load->model("Inicio_model");
+							$output = $this->Inicio_model->limpiar_carro();
+						}
+					}
+					$this->session->region = $region;
+					$this->session->comuna = $comuna;
+					echo 'TRUE';
+				}
+				else
+				{
+					echo 'FALSE';
+				}
+			}
+			else
+			{
+				echo 'FALSE';
+			}
+		}
+		else
+		{
+			echo 'FALSE';
 		}
 	}
 
@@ -119,6 +164,13 @@ class Inicio extends CI_Controller
 		}else{
 			redirect(base_url());
 		}
+	}
+
+	private function _establecer_fechas($fecha_inicio,$fecha_fin)
+	{
+
+		$this->session->inicio = $fecha_inicio;
+		$this->session->fin = $fecha_fin;
 	}
 
 	public function mision()
@@ -485,6 +537,27 @@ class Inicio extends CI_Controller
 		else
 		{
 			return 'asc';
+		}
+	}
+
+	public function revisar_busqueda()
+	{
+		if($this->input->post('inicio') && $this->input->post('final') && $this->input->post('region') && $this->input->post('comuna'))
+		{
+			$this->_establecer_fechas($this->input->post('inicio'),$this->input->post('final'));
+			$this->load->model("Inicio_model");
+			$output = $this->Inicio_model->verificar_comuna_carro($this->input->post('region'),$this->input->post('comuna'));
+			if($this->session->estado==TRUE && $output->estado=='TRUE')
+			{
+				$this->Inicio_model->limpiar_carro();
+			}
+			$this->session->region = $this->input->post('region');
+			$this->session->comuna = $this->input->post('comuna');
+			echo 'TRUE';
+		}
+		else
+		{
+			echo 'NULL';
 		}
 	}
 

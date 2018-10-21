@@ -104,8 +104,7 @@
 </body>
 <script>
     $(document).ready(function(){
-
-        $("#region").val("13");
+        
 
         $("#boton_modal").click(function(){
             var rut = $("#rut_sesion").val();
@@ -155,15 +154,16 @@
         });
 
         $('#fecha_final').datepicker({
-            startDate: new Date('<?php date_default_timezone_set('America/Santiago');
-                            echo date("d/m/Y", strtotime("+1 day"))?>'),
+            startDate: new Date(),
             language: "es"            
         });
 
         $("#guardar_fecha").click(function(){            
             var inicio = $("#fecha_inicial").val();
             var final = $("#fecha_final").val();
-            if(new Date(final).getTime()<=new Date(inicio).getTime()){
+            var f_i = moment(inicio,"DD/MM/YYYY"); 
+            var f_f = moment(final,"DD/MM/YYYY");
+            if(f_f.diff(f_i)<=0){
                 swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
             }else{
                 $.ajax({
@@ -185,19 +185,31 @@
         });
 
         $('#fecha_final_i').datepicker({
-            startDate: new Date('<?php date_default_timezone_set('America/Santiago');
-                            echo date("d/m/Y", strtotime("+1 day"))?>'),
+            startDate: new Date(),
             language: "es"            
         });
 
-        $("#realizar_busqueda").click(function(){            
+        $("#formulario_inicio").submit(function(e){            
             var inicio = $("#fecha_inicial_i").val();
             var final = $("#fecha_final_i").val();
+            var region = $("#region").val();
+            var comuna = $("#comuna").val();
+            var texto = $("#busqueda").val();
+            var f_i = moment(inicio,"DD/MM/YYYY"); 
+            var f_f = moment(final,"DD/MM/YYYY");
             var busqueda = $("#busqueda").val();
-            if(new Date(final).getTime()<=new Date(inicio).getTime()){
+            if(f_f.diff(f_i)<=0){
                 swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
             }else{
                 $.ajax({
+                    url: "<?=base_url()?>busqueda",
+                    data: {inicio:inicio,final:final,region:region,comuna:comuna},
+                    type: 'post',
+                    success: function (data){
+                        arreglar_url_inicio("search",busqueda); 
+                    }
+                });
+                /*$.ajax({
                     url: "<?=base_url()?>fechas",
                     data: {inicio: inicio,fin: final},
                     type: 'post',
@@ -206,9 +218,20 @@
                             location.reload();
                         }
                     }
-                });
+                });*/
             }
+            e.preventDefault();
         });
+        
+        function arreglar_url_inicio(nombre_item,valor_item){
+            var url = new URI('<?php echo base_url()?>productos');
+            if(url.hasQuery(nombre_item)===true){
+                url.setSearch(nombre_item,valor_item);
+            }else{
+                url.addSearch(nombre_item,valor_item)
+            }
+            window.location.href = url.toString();
+        }
 
         function LimpiarForm(){
             $(".i_rut").val("");

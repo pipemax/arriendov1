@@ -440,3 +440,49 @@ BEGIN
     RETURN SUMADOR;
 END;
 $$ LANGUAGE PLPGSQL;
+
+/******************************************************************************************************************************************************************/
+select bool,message from verificar_comuna(185756203,7,7401);
+drop function verificar_comuna(int,int,int);
+CREATE OR REPLACE FUNCTION VERIFICAR_COMUNA(
+    RUT_U IN USUARIO.RUT%TYPE,
+    REGION_D IN REGION.REGION_ID%TYPE,
+    COMUNA_D IN COMUNA.COMUNA_ID%TYPE,
+    BOOL OUT VARCHAR,
+    MESSAGE OUT VARCHAR)
+RETURNS RECORD AS $$
+DECLARE
+    COMUNA_CARRO SUCURSAL.COMUNA%TYPE;
+    CONTADOR1 INT := 0;
+    CONTADOR2 INT := 0;
+BEGIN
+    SELECT S.COMUNA INTO COMUNA_CARRO FROM CARRITO C JOIN SUCURSAL S
+    ON C.COD_SUCURSAL = S.COD_SUCURSAL
+    WHERE C.RUT = RUT_U;
+    SELECT COUNT(*) INTO CONTADOR1 FROM REGION WHERE REGION_ID = REGION_D;
+    SELECT COUNT(*) INTO CONTADOR2 FROM COMUNA WHERE COMUNA_ID = COMUNA_D;
+    IF CONTADOR1!=0 THEN
+        IF CONTADOR2!=0 THEN            
+            IF COMUNA_D!=COMUNA_CARRO THEN
+                BOOL := 'TRUE';
+                MESSAGE := 'CAMBIO DE COMUNA AUTORIZADO';
+            ELSE
+                BOOL := 'NULL';
+                MESSAGE := 'NULL';
+            END IF;
+        ELSE
+            BOOL := 'FALSE';
+            MESSAGE := 'LA COMUNA INGRESADA NO EXISTE';
+        END IF;
+    ELSE
+        BOOL := 'FALSE';
+        MESSAGE := 'LA REGION INGRESADA NO EXISTE';
+    END IF;
+    RETURN;
+    EXCEPTION 
+        WHEN OTHERS THEN    
+            BOOL := 'FALSE';
+            MESSAGE := SQLERRM;
+            RETURN;
+END;
+$$ LANGUAGE PLPGSQL;

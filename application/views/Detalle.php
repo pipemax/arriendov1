@@ -56,7 +56,7 @@
                                     {
                                 ?>
                                     <li id="<?php echo $cat->cod_categoria; ?>">
-                                        <a href="<?php echo base_url(); ?>productos/<?php echo $cat->cod_categoria; ?>/1/"><?php echo $cat->nombre; ?><span class="badge pull-right"><?php echo $cat->contador; ?></span></a>
+                                        <a href="<?php echo base_url(); ?>productos/?categoria=<?php echo $cat->cod_categoria; ?>"><?php echo $cat->nombre; ?><span class="badge pull-right"><?php echo $cat->contador; ?></span></a>
                                     </li>
                                 <?php //PHP
                                     }
