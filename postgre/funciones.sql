@@ -1,11 +1,16 @@
-﻿CREATE OR REPLACE FUNCTION VERIFICA_HERRAMIENTA_SUCURSAL(
+﻿
+CREATE OR REPLACE FUNCTION VERIFICA_HERRAMIENTA_SUCURSAL(
     CODIGO IN SUCURSAL_HERRAMIENTA.COD_HERRAMIENTA%TYPE,
-    CODIGO_S IN SUCURSAL_HERRAMIENTA.COD_SUCURSAL%TYPE)
+    CODIGO_S IN SUCURSAL_HERRAMIENTA.COD_SUCURSAL%TYPE,
+    EMPRESA_S IN SUCURSAL_HERRAMIENTA.EMPRESA%TYPE)
 RETURNS BOOLEAN AS $$
 DECLARE
     CONTADOR INT;
 BEGIN
-    SELECT COUNT(*) INTO CONTADOR FROM SUCURSAL_HERRAMIENTA WHERE COD_HERRAMIENTA = CODIGO AND COD_SUCURSAL = CODIGO_S;
+    SELECT COUNT(*) INTO CONTADOR FROM SUCURSAL_HERRAMIENTA 
+    WHERE COD_HERRAMIENTA = CODIGO 
+    AND COD_SUCURSAL = CODIGO_S
+    AND EMPRESA = EMPRESA_S;
     IF (CONTADOR>0) THEN
         RETURN TRUE;
     ELSE
@@ -38,13 +43,15 @@ $$ LANGUAGE PLPGSQL;
 
 /****************************************************************************************************************************************************************/
 
+
 CREATE OR REPLACE FUNCTION CHECKSUCURSAL(
-    CODIGO IN INT)
+    CODIGO IN INT,
+    EMPRESA_S IN INT)
     RETURNS BOOLEAN AS $$
 DECLARE
     CONTADOR INT;
 BEGIN 
-    SELECT COUNT(*) INTO CONTADOR FROM SUCURSAL WHERE COD_SUCURSAL=CODIGO;
+    SELECT COUNT(*) INTO CONTADOR FROM SUCURSAL WHERE COD_SUCURSAL=CODIGO AND COD_EMPRESA = EMPRESA_S;
     IF (CONTADOR>0) THEN
         RETURN TRUE;
     ELSE
@@ -218,15 +225,42 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
+
+/****************************************************************************************************************************************************************/
+
+CREATE OR REPLACE FUNCTION GETPASSADMIN(
+    RUT_U IN USUARIO.RUT%TYPE)
+    RETURNS VARCHAR AS $$
+DECLARE  
+    PASS_U VARCHAR(100);      
+BEGIN
+    IF(CHECKUSER(RUT_U)=TRUE) THEN
+        SELECT PASS INTO PASS_U FROM ADMINISTRADOR WHERE RUT=RUT_U;
+        RETURN PASS_U;
+    ELSE
+        RETURN 'FALSE';
+    END IF;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 'FALSE';
+        WHEN OTHERS THEN 
+            RETURN 'FALSE';
+END;
+$$ LANGUAGE PLPGSQL;
+
 /****************************************************************************************************************************************************************/
 SELECT * FROM CHECKHERRAMIENTA(185756203);
+
 CREATE OR REPLACE FUNCTION CHECKHERRAMIENTA(
-    CODIGO IN INT)
+    CODIGO IN INT,
+    EMPRESA_H IN INT)
     RETURNS BOOLEAN AS $$
 DECLARE
     CONTADOR INT;
 BEGIN
-    SELECT COUNT(*) INTO CONTADOR FROM HERRAMIENTA WHERE COD_HERRAMIENTA=CODIGO;
+    SELECT COUNT(*) INTO CONTADOR FROM HERRAMIENTA 
+    WHERE COD_HERRAMIENTA=CODIGO
+    AND EMPRESA = EMPRESA_H;
     IF(CONTADOR>0) THEN
         RETURN TRUE;
     ELSE
@@ -261,6 +295,30 @@ BEGIN
             RETURN FALSE;
 END;
 $$ LANGUAGE PLPGSQL;
+
+
+/***********************************************************************************************************************************************************************************/
+CREATE OR REPLACE FUNCTION CHECKADMIN(
+    RUT_U IN INT)
+    RETURNS BOOLEAN AS $$
+DECLARE 
+    CONTADOR INT;
+BEGIN
+    SELECT COUNT(*) INTO CONTADOR FROM ADMINISTRADOR WHERE RUT=RUT_U;
+    IF(CONTADOR>0) THEN
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+        WHEN OTHERS THEN
+            RETURN FALSE;
+END;
+$$ LANGUAGE PLPGSQL;
+
+
 
 /****************************************************************************************************************************************************************/
 SELECT * FROM VALIDACION(86931133);
@@ -384,6 +442,7 @@ $$ LANGUAGE PLPGSQL;
 
 /****************************************************************************************************************************************************************/
 
+
 CREATE OR REPLACE FUNCTION VACIAR_CARRO(
     RUT_U IN USUARIO.RUT%TYPE)
     RETURNS BOOLEAN AS $$
@@ -401,7 +460,7 @@ $$ LANGUAGE PLPGSQL;
 /****************************************************************************************************************************************************************/
 
 SELECT * FROM VALIDAR_LOGIN(123123123,'AAAAAAAA');
-DROP FUNCTION VALIDAR_LOGIN(INT,VARCHAR);
+DROP FUNCTION VALIDAR_LOGIN(INT,VARCHAR,VARCHAR);
 CREATE OR REPLACE FUNCTION VALIDAR_LOGIN
     (RUT_C  IN  INT,
     PASS_C  IN  VARCHAR)
@@ -410,6 +469,28 @@ DECLARE
     VERIFICADOR BOOLEAN;
 BEGIN
     SELECT PASS = CRYPT(PASS_C, PASS) INTO VERIFICADOR FROM USUARIO WHERE RUT = RUT_C;
+    IF VERIFICADOR = TRUE THEN
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+        WHEN OTHERS THEN
+            RETURN FALSE;
+END;
+$$ LANGUAGE PLPGSQL;
+
+select from validar_login_admin(18475672,'234234');
+CREATE OR REPLACE FUNCTION VALIDAR_LOGIN_ADMIN
+    (RUT_C  IN  INT,
+    PASS_C  IN  VARCHAR)
+    RETURNS BOOLEAN AS $$
+DECLARE
+    VERIFICADOR BOOLEAN;
+BEGIN
+    SELECT PASS = CRYPT(PASS_C, PASS) INTO VERIFICADOR FROM ADMINISTRADOR WHERE RUT = RUT_C;
     IF VERIFICADOR = TRUE THEN
         RETURN TRUE;
     ELSE

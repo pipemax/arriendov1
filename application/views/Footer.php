@@ -209,16 +209,6 @@
                         arreglar_url_inicio("search",busqueda); 
                     }
                 });
-                /*$.ajax({
-                    url: "<?=base_url()?>fechas",
-                    data: {inicio: inicio,fin: final},
-                    type: 'post',
-                    success: function (data){
-                        if(data=='TRUE'){
-                            location.reload();
-                        }
-                    }
-                });*/
             }
             e.preventDefault();
         });

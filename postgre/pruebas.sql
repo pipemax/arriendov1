@@ -1,4 +1,5 @@
 ﻿select bool,message from insertar_usuario(97784507,'felipe','tapia','ftapia46@gmail.com','pipemax','direccion',986520661);
+select bool,message from insertar_administrador(185756203,'felipe','tapia','ftapia46@gmail.com','pipemax',986520661);
 select bool,message from eliminar_usuario(86931133);
 select bool,message from actualizar_user(185756203,'felipe','tapia','ftapia46@gmail.com','direccion',986520661);
 select bool,message from actualizar_password_user(185756203,'maximus');
@@ -6,25 +7,87 @@ select bool,message from nueva_herramienta(1,'algo','buena herramienta','',1)
 select * from usuario;
 select * from provincia;
 select * from comuna;
+select * from empresa;
+select * from administrador;
+select * from herramienta where cod_herramienta = 2839482;
+select * from sucursal_herramienta;
 
+select cod_sucursal, nombre
+from sucursal 
+where cod_sucursal is not null;
+
+select cod_sucursal, nombre
+from sucursal 
+where cod_sucursal is not (select sh_h.cod_sucursal
+                        from herramienta h left outer join sucursal_herramienta sh_h
+                        on h.cod_herramienta = sh_h.cod_herramienta
+                        and h.empresa = sh_h.empresa
+                        where h.empresa = (select empresa from administrador where rut = 185756203)
+                        and h.cod_herramienta = 2839482);
+
+select cod_sucursal, nombre, 'no' as vinculado
+from sucursal 
+where cod_sucursal not in (select cod_sucursal
+                        from sucursal_herramienta 
+                        where cod_herramienta = 2839482)
+and cod_empresa = (select empresa from administrador where rut = 185756203)
+union
+select cod_sucursal, nombre, 'si' as vinculado
+from sucursal 
+where cod_sucursal in (select cod_sucursal
+                        from sucursal_herramienta 
+                        where cod_herramienta = 2839482)
+and cod_empresa = (select empresa from administrador where rut = 185756203);
+
+select su.cod_sucursal,su.nombre,su_h.cod_herramienta
+from sucursal su right join sucursal_herramienta su_h
+on su.cod_sucursal = su_h.cod_sucursal
+right outer join herramienta he
+on he.cod_herramienta = su_h.cod_herramienta
+and he.empresa = su_h.empresa
+where su.cod_empresa = (select empresa from administrador where rut = 185756203)
+and he.cod_herramienta = 2839482
+
+delete from herramienta
+where cod_herramienta = 2839482;
+
+update detalle
+set empresa = 96792430;
+
+update administrador
+set comuna = 7101
+where rut = 183441396;
+
+update sucursal_herramienta 
+set empresa = 96792430;
+
+update administrador
+set rol = 'SA'
+where rut = 185756203;
+
+delete from administrador
+where rut = 183441396;
 
 select cod_sucursal 
 from sucursal_herramienta
 group by cod_sucursal
 having count(cod_herramienta) > 1;
 
-select re.region_id,re.region_nombre,c.comuna_id 
-from region re join provincia pro
+select re.region_id,re.region_nombre
+from region re 
+join provincia pro
 on re.region_id = pro.provincia_region_id
 join comuna c
 on pro.provincia_id = c.comuna_provincia_id
+where c.comuna_id = 7102
+group by re.region_id
 join sucursal su
 on c.comuna_id = su.comuna
 group by re.region_id
 
 select * from comuna where comuna_id in (7101,7401);
 
-select * from region;
+select * from region order by region_id;
 
 select c.comuna_id, c.comuna_nombre 
 from region r
@@ -128,6 +191,7 @@ select * from empresa;
 
 select bool,message from nueva_sucursal('Sodimac Talca','Av San Miguel n°12',987654321,'',96792430,7101);
 select bool,message from nueva_sucursal('Sodimac Linares','Av. Aníbal León Bustos 0376',123456789,'',96792430,7401);
+select bool,message from nueva_sucursal('Sodimac Talca Colin','Av. Colín 635',968673726,'',96792430,7101);
 select * from sucursal;
 
 

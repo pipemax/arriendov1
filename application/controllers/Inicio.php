@@ -18,6 +18,7 @@ class Inicio extends CI_Controller
 		}		
 	}
 
+	//REVISADO
 	private function _head()
 	{
 		if($this->session->estado==TRUE)
@@ -32,8 +33,8 @@ class Inicio extends CI_Controller
 		}
 		$head->regiones = $this->Inicio_model->obtener_regiones();
 		$head->comunas = $this->Inicio_model->obtener_comunas($this->session->region);
-		$head->sucursal = $this->Inicio_model->obtener_sucursal($this->session->sucursal);
-		$head->sucursales = $this->Inicio_model->obtener_sucursales();
+		//$head->sucursal = $this->Inicio_model->obtener_sucursal($this->session->sucursal);
+		//$head->sucursales = $this->Inicio_model->obtener_sucursales();
 		$head->categorias = $this->Inicio_model->obtener_categorias();
 		return $head;
 	}
@@ -49,6 +50,7 @@ class Inicio extends CI_Controller
 		$this->load->view("footer");
 	}
 
+	//REVISADO
 	public function obtener_comunas()
 	{
 		if($this->input->post('region'))
@@ -71,6 +73,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//REVISADO
 	public function validacion()
 	{
 		if($this->input->post('rut_sesion'))
@@ -88,6 +91,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//REVISADO
 	public function comuna()
 	{
 		if($this->input->post('region'))
@@ -129,6 +133,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//INNECESARIA
 	public function sucursal()
 	{
 		if($this->input->post('sucursal'))
@@ -152,6 +157,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//REVISADO
 	public function fechas()
 	{
 		if($this->input->post('inicio'))
@@ -166,6 +172,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//REVISADO
 	private function _establecer_fechas($fecha_inicio,$fecha_fin)
 	{
 
@@ -173,21 +180,25 @@ class Inicio extends CI_Controller
 		$this->session->fin = $fecha_fin;
 	}
 
+	//REVISADO
 	public function mision()
 	{
 		echo "PENDIENTE";
 	}
 
+	//REVISADO
 	public function vision()
 	{
 		echo "PENDIENTE";
 	}
 
+	//REVISADO
 	public function quienes_somos()
 	{
 		echo "PENDIENTE";
 	}
 
+	//REVISADO
 	public function guardar_registro()
 	{
 		if($this->input->post('rut'))
@@ -208,6 +219,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//REVISADO
 	public function registro()
 	{
 		if($this->session->estado==FALSE)
@@ -222,6 +234,7 @@ class Inicio extends CI_Controller
 			redirect(base_url());
 		}
 	}
+
 
 	public function agregar_carrito()
 	{
@@ -428,6 +441,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//REVISADO
 	public function productos()
 	{
 		$this->load->model("Inicio_model");		

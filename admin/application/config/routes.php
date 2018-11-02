@@ -49,6 +49,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'welcome';
+$route['default_controller'] = 'inicio';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['validacion'] = 'Inicio/sesion_admin';
+$route['intranet'] = 'Inicio/intranet';
+$route['salir'] = 'Inicio/cerrar_sesion';
+$route['agregar-administrador'] = 'Inicio/agregar_admin';
+$route['modificar-administrador'] = 'Inicio/modificar_admin';
+$route['eliminar-administrador'] = 'Inicio/eliminar_admin';
+$route['obtener-administrador'] = 'Inicio/obtener_admin';
+$route['contrasena-administrador'] = 'Inicio/contrasena_admin';
+$route['administradores'] = 'Inicio/ver_admin';
+$route['sucursales'] = 'Inicio/ver_sucursales';
+$route['agregar-sucursal'] = 'Inicio/agregar_sucursal';
+$route['modificar-sucursal'] = 'Inicio/modificar_sucursal';
+$route['eliminar-sucursal'] = 'Inicio/eliminar_sucursal';
+$route['obtener-sucursal'] = 'Inicio/obtener_sucursal';
+$route['herramientas'] = 'Inicio/ver_herramientas';
+$route['herramientas/(:num)'] = 'Inicio/vinculacion_herramienta/$1';
+$route['agregar-herramienta'] = 'Inicio/agregar_herramienta';
+$route['modificar-herramienta'] = 'Inicio/modificar_herramienta';
+$route['eliminar-herramienta'] = 'Inicio/eliminar_herramienta';
+$route['obtener-herramienta'] = 'Inicio/obtener_herramienta';
+$route['vincular-herramienta'] = 'Inicio/vincular_herramienta';
+$route['desvincular-herramienta'] = 'Inicio/desvincular_herramienta';
+$route['obtener-vinculacion'] = 'Inicio/obtener_vinculacion';
+$route['modificar-vinculacion'] = 'Inicio/modificar_vinculacion';
+
