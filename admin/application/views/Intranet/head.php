@@ -26,6 +26,8 @@
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/default-css.css">
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/styles.css">
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/responsive.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/slicknav.min.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-datepicker.min.css">
 
     <!-- datatables -->
     <link href="<?=base_url();?>assets/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -43,6 +45,10 @@
     <script src="<?php echo base_url(); ?>assets/js/metisMenu.min.js"></script>
     <script src="<?php echo base_url(); ?>assets/js/jquery.slimscroll.min.js"></script>
     <script src="<?php echo base_url(); ?>assets/js/jquery.slicknav.min.js"></script>
+    <script src="<?php echo base_url(); ?>assets/js/bootstrap-datepicker.min.js"></script>
+    <script src="<?php echo base_url(); ?>assets/js/bootstrap-datepicker.es.min.js"></script>
+    <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+
 
     <!-- datatables js -->
     <script src="<?=base_url();?>assets/js/jquery.dataTables.min.js" type="text/javascript"></script>
@@ -87,27 +93,17 @@
                             </li>
                             
                             <li>
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-wrench"></i><span>
-                                    Herramientas
+                                <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-wrench"></i><span>Herramientas
                                     </span></a>
                                 <ul class="collapse">
                                     <li><a href="<?php echo base_url();?>herramientas/">Gestionar Herramientas</a></li>
                                 </ul>
                             </li>
                             <li>
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-wrench"></i><span>SIN USO</span></a>
-                                <ul class="collapse">
-                                    <li><a href="barchart.html">bar chart</a></li>
-                                    <li><a href="linechart.html">line Chart</a></li>
-                                    <li><a href="piechart.html">pie chart</a></li>
-                                </ul>
+                                <a href="<?php echo base_url();?>usuarios/" aria-expanded="true"><i class="fa fa-user"></i><span>Usuarios</span></a>
                             </li>
                             <li>
-                                <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-home"></i><span>SIN USO</span></a>
-                                <ul class="collapse">
-                                    <li><a href="accordion.html">Accordion</a></li>
-                                    <li><a href="alert.html">Alert</a></li>
-                                </ul>
+                                <a href="<?php echo base_url();?>arriendos/" aria-expanded="true"><i class="fa fa-calendar"></i><span>Arriendos</span></a>
                             </li>
                             <li>
                                 <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-tasks"></i><span>SIN USO</span></a>

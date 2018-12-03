@@ -6,11 +6,74 @@ select bool,message from actualizar_password_user(185756203,'maximus');
 select bool,message from nueva_herramienta(1,'algo','buena herramienta','',1)
 select * from usuario;
 select * from provincia;
-select * from comuna;
+select * from comuna where comuna_nombre = 'Talca';
 select * from empresa;
 select * from administrador;
 select * from herramienta where cod_herramienta = 2839482;
 select * from sucursal_herramienta;
+update sucursal_herramienta
+set f_final_d = to_date('28/11/2018','DD/MM/YYYY'),f_inicio_d = to_date('28/11/2018','DD/MM/YYYY'),descuento=25
+where cod_herramienta = 2646528 and cod_sucursal = 1 and empresa = 96792430;
+select * from arriendo;
+select * from detalle;
+select * from carrito;
+
+select * from to_date(null,'DD/MM/YYYY');
+
+select su.cod_sucursal, su.nombre, 'NO' as vinculado, sh.descuento
+from sucursal su join sucursal_herramienta sh
+on su.cod_sucursal = sh.cod_sucursal
+where su.cod_sucursal not in (select cod_sucursal
+                            from sucursal_herramienta 
+                            where cod_herramienta = 2646528)
+and su.cod_empresa = (select empresa from administrador where rut = 185756203)
+union
+select su.cod_sucursal, su.nombre, 'SI' as vinculado, sh.descuento
+from sucursal su join sucursal_herramienta sh
+on su.cod_sucursal = sh.cod_sucursal
+where su.cod_sucursal in (select cod_sucursal
+                        from sucursal_herramienta 
+                        where cod_herramienta = 2646528)
+and sh.cod_herramienta = 2646528
+and su.cod_empresa = (select empresa from administrador where rut = 185756203)
+group by su.cod_sucursal, su.nombre, sh.descuento
+
+select cod_sucursal, nombre, 'NO' as vinculado
+from sucursal 
+where cod_sucursal not in (select cod_sucursal
+                            from sucursal_herramienta 
+                            where cod_herramienta = 2646528)
+and cod_empresa = (select empresa from administrador where rut = 185756203)
+union
+select cod_sucursal, nombre, 'SI' as vinculado
+from sucursal 
+where cod_sucursal in (select cod_sucursal
+                        from sucursal_herramienta 
+                        where cod_herramienta = 2646528)
+and cod_empresa = (select empresa from administrador where rut = 185756203);
+
+SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
+to_char(A.fecha_final, 'DD/MM/YYYY') AS fecha_final,A.total, A.rut_U,
+to_char(A.fecha_arriendo, 'DD/MM/YYYY') AS fecha_arriendo, A.estado, A.total
+FROM arriendo A JOIN usuario U
+ON A.rut_U = U.rut
+where A.cod_arriendo IN (select id_a
+                        from detalle 
+                        where empresa = 96792430
+                        group by id_a)
+ORDER BY A.fecha_arriendo DESC
+
+
+select comuna 
+from sucursal 
+where cod_sucursal in (SELECT cod_sucursal 
+                       FROM carrito 
+                       WHERE rut = 185756203)
+group by comuna;
+
+SELECT * FROM HERRAMIENTA 
+WHERE COD_HERRAMIENTA = 1791710
+AND EMPRESA = 1
 
 select cod_sucursal, nombre
 from sucursal 
@@ -38,6 +101,21 @@ where cod_sucursal in (select cod_sucursal
                         from sucursal_herramienta 
                         where cod_herramienta = 2839482)
 and cod_empresa = (select empresa from administrador where rut = 185756203);
+
+select * from sucursal_herramienta;
+
+select re.region_id,re.region_nombre 
+from region re join provincia pro
+on re.region_id = pro.provincia_region_id
+join comuna c
+on pro.provincia_id = c.comuna_provincia_id
+join sucursal su
+on c.comuna_id = su.comuna
+where su.cod_sucursal in (select cod_sucursal 
+                        from sucursal_herramienta
+                        group by cod_sucursal
+                        having count(cod_herramienta) > 1)
+group by re.region_id
 
 select su.cod_sucursal,su.nombre,su_h.cod_herramienta
 from sucursal su right join sucursal_herramienta su_h
@@ -124,7 +202,8 @@ select * from comuna where comuna_nombre = 'Talca';
 select * from comuna where comuna_nombre = 'Linares';
 select * from provincia;
 select * from sucursal;
-select * from detalle where cod_h = 1594265;
+select * from detalle where id_a = 28;
+select * from arriendo;
 
 SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, (SH.stock - D.cantidad) AS stock
 FROM herramienta H JOIN categoria C 
@@ -141,6 +220,58 @@ WHERE H.cod_herramienta IN (SELECT H.cod_herramienta FROM arriendo A JOIN detall
 AND SH.cod_sucursal = 2 
 GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, SH.stock, stock2
 
+select * from sucursal_herramienta where cod_herramienta = 1676326 and cod_sucursal IN (1,3);
+
+SELECT cod_herramienta, nombre, descripcion, url_foto, precio, nombreC, empresa, empresan, cod_sucursal, nombres, stock FROM
+    (SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, H.empresa, E.nombre as empresan, SU.cod_sucursal, SU.nombre as nombres, (SH.stock - SUM(D.cantidad)) AS stock
+    FROM herramienta H JOIN categoria C 
+    ON H.cod_categoria=C.cod_categoria
+    JOIN sucursal_herramienta SH
+    ON H.cod_herramienta = SH.cod_herramienta
+    AND H.empresa = SH.empresa
+    JOIN sucursal SU
+    ON SH.cod_sucursal = SU.cod_sucursal
+    JOIN detalle D 
+    ON D.cod_h = SH.cod_herramienta
+    AND D.empresa = SH.empresa
+    AND D.cod_sucursal = SH.cod_sucursal
+    JOIN empresa E
+    ON E.cod_empresa = SU.cod_empresa
+    WHERE D.id_a IN (SELECT A.cod_arriendo FROM arriendo A JOIN detalle D 
+                        ON A.cod_arriendo=D.id_a JOIN sucursal_herramienta H
+                        ON D.cod_h = H.cod_herramienta
+                        AND D.empresa = H.empresa
+                        AND D.cod_sucursal = H.cod_sucursal
+                        WHERE A.fecha_inicio between to_date('18/11/2018', 'DD/MM/YYYY') AND to_date('19/11/2018', 'DD/MM/YYYY')
+                        OR A.fecha_final between to_date('18/11/2018"', 'DD/MM/YYYY') AND to_date('19/11/2018', 'DD/MM/YYYY')
+                        GROUP BY A.cod_arriendo)
+    AND SU.comuna = 7101
+    AND H.cod_categoria =4
+    GROUP BY H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre, H.empresa, E.nombre, SU.cod_sucursal, SU.nombre, SH.stock
+    UNION
+    SELECT H.cod_herramienta, H.nombre, H.descripcion, H.url_foto, SH.precio, C.nombre AS nombreC, H.empresa, E.nombre as empresan, SU.cod_sucursal, SU.nombre as nombres, SH.stock AS stock
+    FROM herramienta H JOIN categoria C 
+    ON H.cod_categoria = C.cod_categoria
+    JOIN sucursal_herramienta SH
+    ON H.cod_herramienta = SH.cod_herramienta
+    AND H.empresa = SH.empresa
+    JOIN sucursal SU
+    ON SH.cod_sucursal = SU.cod_sucursal
+    FULL OUTER JOIN detalle D 
+    ON D.cod_h = SH.cod_herramienta
+    AND D.empresa = SH.empresa
+    AND D.cod_sucursal = SH.cod_sucursal
+    JOIN empresa E
+    ON E.cod_empresa = SU.cod_empresa
+    WHERE (H.cod_herramienta,SH.cod_sucursal) NOT IN (SELECT H.cod_herramienta,H.cod_sucursal FROM arriendo A JOIN detalle D 
+                                ON A.cod_arriendo = D.id_a JOIN sucursal_herramienta H
+                                ON D.cod_h = H.cod_herramienta
+                                AND D.empresa = H.empresa
+                                AND D.cod_sucursal = H.cod_sucursal
+                                WHERE A.fecha_inicio between to_date('18/11/2018', 'DD/MM/YYYY') AND to_date('19/11/2018', 'DD/MM/YYYY')
+                                OR A.fecha_final between to_date('18/11/2018"', 'DD/MM/YYYY') AND to_date('19/11/2018', 'DD/MM/YYYY'))
+    AND SU.comuna = 7101
+    AND H.cod_categoria = 4) as RETORNO;
 
 
 

@@ -28,6 +28,58 @@ class Admin_model extends CI_model{
         }
     }
 
+    public function obtener_usuarios(){
+        $this->load->database();
+        $consulta = "select rut, nombres, apellidos, correo, celular, direccion, estado
+                    from usuario
+                    where rut IN (select rut_u
+                                from arriendo A
+                                join detalle D
+                                on A.cod_arriendo = D.id_a
+                                where empresa = (select empresa 
+                                    from administrador
+                                    where rut = ?))";
+        $output = $this->db->query($consulta,array($this->session->rut));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function obtener_usuario($rut){
+        $this->load->database();
+        $consulta = "select rut, nombres, apellidos, correo, celular, direccion, estado
+                    from usuario
+                    where rut = ?";
+        $output = $this->db->query($consulta,array($rut));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function modificar_usuario($data){
+        $this->load->database();
+        $consulta = "select bool,message from actualizar_user(?,?,?,?,?,?)";
+        $output = $this->db->query($consulta,array($data->rut,$data->nombres,$data->apellidos,$data->correo,$data->direccion,$data->celular));
+        $respuesta = new stdClass();
+        $respuesta->estado = $output->result()[0]->bool;
+        $respuesta->mensaje = $output->result()[0]->message;  
+        return $respuesta;
+    }
+
+    public function contrasena_usuario($data){
+        $this->load->database();
+        $consulta = "select bool,message from actualizar_password_user(?,?)";
+        $output = $this->db->query($consulta,array($data->rut,$data->pass));
+        $respuesta = new stdClass();
+        $respuesta->estado = $output->result()[0]->bool;
+        $respuesta->mensaje = $output->result()[0]->message;  
+        return $respuesta;
+    }
+
     public function obtener_administrador($rut){
         $this->load->database();
         $consulta = "select rut,nombres,apellidos,correo,celular,empresa,comuna  
@@ -198,8 +250,8 @@ class Admin_model extends CI_model{
 
     public function vincular_herramienta($data){
         $this->load->database();
-        $consulta = "select bool,message from vincular_herramienta_sucursal(?,?,?,?,?)";
-        $output = $this->db->query($consulta,array($data->herramienta,$data->sucursal,$data->precio,$data->stock,$data->empresa));
+        $consulta = "select bool,message from vincular_herramienta_sucursal(?,?,?,?,?,?,?,?)";
+        $output = $this->db->query($consulta,array($data->herramienta,$data->sucursal,$data->precio,$data->stock,$data->empresa,$data->descuento,$data->inicio,$data->final));
         $respuesta = new stdClass();
         $respuesta->estado = $output->result()[0]->bool;
         $respuesta->mensaje = $output->result()[0]->message;  
@@ -218,7 +270,7 @@ class Admin_model extends CI_model{
 
     public function obtener_vinculacion($data){
         $this->load->database();
-        $consulta = "select cod_herramienta,cod_sucursal,stock,precio 
+        $consulta = "select cod_herramienta,cod_sucursal,stock,precio,descuento,to_char(f_inicio_d,'DD/MM/YYYY') as f_inicio_d,to_char(f_final_d,'DD/MM/YYYY') as f_final_d
                     from sucursal_herramienta
                     where cod_herramienta = ?
                     and cod_sucursal = ?
@@ -233,8 +285,8 @@ class Admin_model extends CI_model{
 
     public function modificar_vinculacion($data){
         $this->load->database();
-        $consulta = "select bool,message from actualizar_h_sucursal(?,?,?,?,?)";
-        $output = $this->db->query($consulta,array($data->herramienta,$data->sucursal,$data->stock,$data->precio,$data->empresa));
+        $consulta = "select bool,message from actualizar_h_sucursal(?,?,?,?,?,?,?,?)";
+        $output = $this->db->query($consulta,array($data->herramienta,$data->sucursal,$data->stock,$data->precio,$data->empresa,$data->descuento,$data->inicio,$data->final));
         $respuesta = new stdClass();
         $respuesta->estado = $output->result()[0]->bool;
         $respuesta->mensaje = $output->result()[0]->message;  
@@ -260,20 +312,24 @@ class Admin_model extends CI_model{
 
     public function obtener_herramienta_vinculada($codigo){
         $this->load->database();
-        $consulta = "select cod_sucursal, nombre, 'NO' as vinculado
-                    from sucursal 
-                    where cod_sucursal not in (select cod_sucursal
+        $consulta = "select su.cod_sucursal, su.nombre, 'NO' as vinculado, sh.descuento
+                    from sucursal su join sucursal_herramienta sh
+                    on su.cod_sucursal = sh.cod_sucursal
+                    where su.cod_sucursal not in (select cod_sucursal
                                                 from sucursal_herramienta 
                                                 where cod_herramienta = ?)
-                    and cod_empresa = (select empresa from administrador where rut = ".$this->session->rut.")
+                    and su.cod_empresa = (select empresa from administrador where rut = ".$this->session->rut.")
                     union
-                    select cod_sucursal, nombre, 'SI' as vinculado
-                    from sucursal 
-                    where cod_sucursal in (select cod_sucursal
+                    select su.cod_sucursal, su.nombre, 'SI' as vinculado, sh.descuento
+                    from sucursal su join sucursal_herramienta sh
+                    on su.cod_sucursal = sh.cod_sucursal
+                    where su.cod_sucursal in (select cod_sucursal
                                             from sucursal_herramienta 
                                             where cod_herramienta = ?)
-                    and cod_empresa = (select empresa from administrador where rut = ".$this->session->rut.");";
-        $output = $this->db->query($consulta,array($codigo,$codigo));
+                    and sh.cod_herramienta = ?
+                    and su.cod_empresa = (select empresa from administrador where rut = ".$this->session->rut.")
+                    group by su.cod_sucursal, su.nombre, sh.descuento";
+        $output = $this->db->query($consulta,array($codigo,$codigo,$codigo));
         if($output->num_rows()>0){
             return $output->result();
         }else{
@@ -584,6 +640,142 @@ class Admin_model extends CI_model{
         }else{
             return FALSE;
         }
+    }
+
+    function obtener_arriendos(){
+        $this->load->database();
+        $consulta = "SELECT A.cod_arriendo ,A.total, A.rut_u,
+                    to_char(A.fecha_arriendo, 'DD/MM/YYYY') AS fecha_arriendo, A.estado, A.total
+                    FROM arriendo A JOIN usuario U
+                    ON A.rut_U = U.rut
+                    where A.cod_arriendo IN (select id_a
+                                            from detalle 
+                                            where empresa = ?
+                                            group by id_a)
+                    ORDER BY A.fecha_arriendo DESC";
+        $output = $this->db->query($consulta,array($this->obtener_empresa_administrador()));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    function obtener_arriendos_rut($rut){
+        $this->load->database();
+        $consulta = "SELECT A.cod_arriendo ,A.total, A.rut_u,
+                    to_char(A.fecha_arriendo, 'DD/MM/YYYY') AS fecha_arriendo, A.estado, A.total
+                    FROM arriendo A JOIN usuario U
+                    ON A.rut_u = U.rut
+                    Where A.rut_u = ?
+                    AND A.cod_arriendo IN (select id_a
+                                            from detalle 
+                                            where empresa = ?
+                                            group by id_a)
+                    ORDER BY A.fecha_arriendo DESC";
+        $output = $this->db->query($consulta,array($rut,$this->obtener_empresa_administrador()));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    function obtener_arriendos_fecha($fecha){
+        $this->load->database();
+        $consulta = "SELECT A.cod_arriendo ,A.total, A.rut_u,
+                    to_char(A.fecha_arriendo, 'DD/MM/YYYY') AS fecha_arriendo, A.estado, A.total
+                    FROM arriendo A JOIN usuario U
+                    ON A.rut_U = U.rut
+                    where A.cod_arriendo IN (select id_a
+                                            from detalle 
+                                            where empresa = ?
+                                            group by id_a)
+                    and to_char(A.fecha_arriendo, 'DD/MM/YYYY') = ?
+                    ORDER BY A.fecha_arriendo DESC";
+        $output = $this->db->query($consulta,array($this->obtener_empresa_administrador(),$fecha));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    function obtener_detalle($value){
+        $this->load->database();
+        $consulta = "SELECT D.cod_h, H.nombre, H.url_foto, D.cantidad, D.total_detalle, SH.precio, D.total_unitario, D.descuento,
+                    D.estado, D.empresa, E.nombre as nombre_empresa, D.cod_sucursal, SU.nombre as nombre_sucursal, D.id_a
+                    FROM detalle D JOIN sucursal_herramienta SH
+                    ON D.cod_h = SH.cod_herramienta
+                    AND D.empresa = SH.empresa
+                    AND D.cod_sucursal = SH.cod_sucursal
+                    JOIN herramienta H
+                    ON H.cod_herramienta = SH.cod_herramienta
+                    AND H.empresa = SH.empresa
+                    JOIN empresa E
+                    ON H.empresa = E.cod_empresa
+                    JOIN sucursal SU
+                    ON SH.cod_sucursal = SU.cod_sucursal
+                    WHERE id_a = ?";
+        $output = $this->db->query($consulta,array($value));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    function obtener_detalle_resumen($datos){
+        $this->load->database();
+        $consulta = "SELECT H.nombre, D.cantidad, D.total_detalle, D.total_unitario, D.descuento,
+                    D.estado, E.nombre as nombre_empresa, SU.nombre as nombre_sucursal, D.id_a
+                    FROM detalle D JOIN sucursal_herramienta SH
+                    ON D.cod_h = SH.cod_herramienta
+                    AND D.empresa = SH.empresa
+                    AND D.cod_sucursal = SH.cod_sucursal
+                    JOIN herramienta H
+                    ON H.cod_herramienta = SH.cod_herramienta
+                    AND H.empresa = SH.empresa
+                    JOIN empresa E
+                    ON H.empresa = E.cod_empresa
+                    JOIN sucursal SU
+                    ON SH.cod_sucursal = SU.cod_sucursal 
+                    WHERE D.id_a = ? 
+                    AND D.cod_h = ?
+                    AND D.empresa = ?
+                    AND D.cod_sucursal = ?";
+        $output = $this->db->query($consulta,array($datos->arriendo,$datos->herramienta,$this->obtener_empresa_administrador(),$datos->sucursal));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    function obtener_arriendo($value){
+        $this->load->database();
+        $consulta = "SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
+                    to_char(A.fecha_final, 'DD/MM/YYYY') AS fecha_final,A.total,A.rut_U,U.nombres,
+                    U.apellidos,to_char(A.fecha_arriendo, 'DD/MM/YYYY') AS fecha_arriendo, A.estado
+                    FROM arriendo A JOIN usuario U
+                    ON A.rut_U = U.rut
+                    WHERE cod_arriendo = ?";
+        $output = $this->db->query($consulta,array($value));
+        if($output->num_rows()>0){
+            return $output->result();
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function modificar_detalle($data){
+        $this->load->database();
+        $consulta = "select bool,message from modificar_detalle(?,?,?,?,?)";
+        $output = $this->db->query($consulta,array($data->herramienta,$data->sucursal,$data->empresa,$data->arriendo,$data->estado));
+        $respuesta = new stdClass();
+        $respuesta->estado = $output->result()[0]->bool;
+        $respuesta->mensaje = $output->result()[0]->message;  
+        return $respuesta;
     }
 
 }

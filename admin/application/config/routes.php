@@ -76,4 +76,12 @@ $route['vincular-herramienta'] = 'Inicio/vincular_herramienta';
 $route['desvincular-herramienta'] = 'Inicio/desvincular_herramienta';
 $route['obtener-vinculacion'] = 'Inicio/obtener_vinculacion';
 $route['modificar-vinculacion'] = 'Inicio/modificar_vinculacion';
-
+$route['usuarios'] = 'Inicio/ver_usuario';
+$route['modificar-usuario'] = 'Inicio/modificar_usuario';
+$route['obtener-usuario'] = 'Inicio/obtener_usuario';
+$route['contrasena-usuario'] = 'Inicio/contrasena_usuario';
+$route['arriendos'] = 'Inicio/arriendos';
+$route['detalle/(:num)'] = 'Inicio/detalle/$1';
+$route['detalle'] = 'Inicio/arriendos';
+$route['obtener-detalle'] = 'Inicio/obtener_detalle';
+$route['modificar-detalle'] = 'Inicio/modificar_detalle';

@@ -45,9 +45,9 @@
                                     foreach($categorias as $cat)
                                     {
                                 ?>
-                                    <li id="<?php echo $cat->cod_categoria; ?>">
-                                        <a href="<?php echo base_url(); ?>productos/?categoria=<?php echo $cat->cod_categoria; ?>"><?php echo $cat->nombre; ?><span class="badge pull-right"><?php echo $cat->contador; ?></span></a>
-                                    </li>
+                                <li id="<?php echo $cat->cod_categoria; ?>">
+                                    <a href="<?php echo base_url(); ?>productos/?categoria=<?php echo $cat->cod_categoria; ?>"><?php echo $cat->nombre; ?><span class="badge pull-right"><?php echo $cat->contador; ?></span></a>
+                                </li>
                                 <?php //PHP
                                     }
                                 ?>
@@ -146,17 +146,7 @@
                     <?php 
                         }
                     ?>                    
-                    
-                    <?php //PHP
-                        if($herramientas!=FALSE)
-                        {
-                    ?>
 
-                    
-                    
-                    <?php //PHP
-                        }
-                    ?>
 
                     <?php //PHP
                         if($herramientas!=FALSE)
@@ -179,49 +169,79 @@
                                     <div class="flip-container">
                                         <div class="flipper">
                                             <div class="front">
-                                                <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta; ?>">
-                                                    <img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $producto->url_foto; ?>" alt="" class="img-responsive">
+                                                <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta;?>/<?php echo $producto->cod_sucursal;?>/<?php echo $producto->empresa;?>">
+                                                    <center><img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $producto->url_foto; ?>" width="60%" heigth="60%" alt="" class="img-responsive"></center>
                                                 </a>
                                             </div>
                                             <div class="back">
-                                                <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta; ?>">
-                                                    <img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $producto->url_foto; ?>" alt="" class="img-responsive">
+                                                <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta;?>/<?php echo $producto->cod_sucursal;?>/<?php echo $producto->empresa;?>">
+                                                    <center><img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $producto->url_foto; ?>" width="60%" heigth="60%" alt="" class="img-responsive"></center>
                                                 </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta; ?>" class="invisible">
-                                        <img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $producto->url_foto; ?>" alt="" class="img-responsive">
+                                    <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta;?>/<?php echo $producto->cod_sucursal;?>/<?php echo $producto->empresa;?>" class="invisible">
+                                        <center><img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $producto->url_foto; ?>" width="60%" heigth="60%"alt="" class="img-responsive"></center>
                                     </a>
-                                    <div class="text">
-                                        <h3><a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta; ?>"><?php echo $producto->nombre; ?></a></h3>
+                                    <div class="text">                                        
+                                        <h3><a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta;?>/<?php echo $producto->cod_sucursal;?>/<?php echo $producto->empresa;?>"><?php echo $producto->nombre; ?></a></h3>
                                         <?php //PHP
                                             if($producto->stock>0)
                                             {  
                                         ?>
                                             <p style="text-align: justify; font-size: 12px;"><?php echo $producto->descripcion; ?>.</p>
+                                            <button type="button" class="btn btn-info btn-block" readonly><?php echo $producto->empresan; ?></button>
+                                            <button type="button" class="btn btn-danger btn-block" readonly>SUCURSAL <?php echo $producto->nombres; ?></button>
+                                            
+                                            <br>
                                             <div class="row">
                                                 <div class="col-md-6 col-xs-12">
                                                     <center><label for="precio">precio x Día</label></center>
-                                                    <p class="price" id="precio">$<?php echo $producto->precio; ?></p>
+                                                    <?php
+                                                        if($producto->descuento!=null && $producto->descuento!=0)
+                                                        {
+                                                    ?>
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-xs-12">
+                                                                <center>ANTES</center>
+                                                                <p class="price" id="precio"><del>$<?php echo number_format($producto->precio, 0,'.', '.'); ?></del></p>
+                                                            </div>
+                                                            <div class="col-md-6 col-xs-12">
+                                                                <center>AHORA</center>
+                                                                <p class="price" id="precio">$<?php echo number_format(round($producto->precio - $producto->precio*($producto->descuento/100)), 0,'.', '.'); ?></p>
+                                                            </div>
+                                                        </div>
+                                                    <?php 
+                                                        }
+                                                        else
+                                                        {
+                                                    ?>
+                                                        <p class="price" id="precio">$<?php echo number_format($producto->precio, 0,'.', '.'); ?></p>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                    
                                                 </div>
                                                 <div class="col-md-6 col-xs-12">
                                                     <div class="form-group">
                                                         <center><label for="stock">Unidades</label></center>
-                                                        <center><input type="number" style="width:70%;" id="<?php echo $producto->cod_herramienta; ?>-stock" class="form-control" value="1" min="1" max="<?php echo $producto->stock; ?>"></center>
+                                                        <center><input type="number" style="width:70%;" id="<?php echo $producto->cod_herramienta."-".$producto->cod_sucursal."-".$producto->empresa;?>-stock" class="form-control" value="1" min="1" max="<?php echo $producto->stock; ?>"></center>
                                                     </div>
                                                 </div>
                                             </div>                                    
                                             <p class="buttons">
-                                                <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta; ?>" class="btn btn-default">Ver Detalle</a>
-                                                <button type="button" class="btn btn-primary carro" value="<?php echo $producto->cod_herramienta; ?>"><i class="fa fa-shopping-cart"></i>Agregar al Carrito</button>
+                                                <a href="<?php echo base_url(); ?>detalle/<?php echo $producto->cod_herramienta;?>/<?php echo $producto->cod_sucursal;?>/<?php echo $producto->empresa;?>" class="btn btn-default">Ver Detalle</a>
+                                                <button type="button" class="btn btn-primary carro" value="<?php echo $producto->cod_herramienta."-".$producto->cod_sucursal."-".$producto->empresa;?>"><i class="fa fa-shopping-cart"></i>Agregar al Carrito</button>
                                             </p>
                                         <?php //PHP
                                             }
                                             else
                                             { 
                                         ?>
-                                            <button class="btn btn-danger btn-block">SIN STOCK</button>
+                                            <p style="text-align: justify; font-size: 12px;"><?php echo $producto->descripcion; ?>.</p>
+                                            <button type="button" class="btn btn-info btn-block" readonly><?php echo $producto->empresan; ?></button>
+                                            <button type="button" class="btn btn-danger btn-block" readonly>SUCURSAL <?php echo $producto->nombres; ?></button>
+                                            <button class="btn btn-warning btn-block">SIN STOCK</button>
                                             <br>
                                             <div class="alert alert-info" style="text-align: justify; font-size: 16px;">La herramienta no posee stock en el intervalo de fecha establecido.</div>
                                         <?php //PHP
@@ -237,6 +257,17 @@
                                             <div class="theribbon" style="text-align:center">STOCK <?php echo $producto->stock; ?></div>
                                             <div class="ribbon-background"></div>
                                         </div>
+                                        <?php 
+                                            if($producto->descuento!=null && $producto->descuento!=0)
+                                        {
+                                        ?>
+                                            <div class="ribbon new">
+                                                <div class="theribbon" style="text-align:center">OFERTA <?php echo $producto->descuento;?>%</div>
+                                                <div class="ribbon-background"></div>
+                                            </div>
+                                        <?php
+                                            }
+                                        ?>
                                     <?php //PHP
                                         }
                                         else
@@ -248,7 +279,7 @@
                                         </div>
                                     <?php //PHP
                                         }
-                                    ?>
+                                    ?>                                    
                                     </div>
                                 </div>
                         <?php //PHP
@@ -282,6 +313,7 @@
 
                     <?php //PHP
                         }
+                    
                     ?>
                 </div>
             </div>
@@ -314,11 +346,18 @@
         }
 
         $(".carro").click(function(){
-            var codigo_h = $(this)[0].value;
-            var cantidad_h = $("#"+codigo_h+"-stock").val();
+            var array = $(this)[0].value;
+            var datos = array.split("-");
+            var codigo_h = datos[0];
+            var sucursal = datos[1];
+            var empresa = datos[2];
+            var cantidad_h = $("#"+array+"-stock").val();
+            console.log("codigo: "+codigo_h);
+            console.log("sucursal: "+sucursal);
+            console.log("empresa: "+empresa);
             $.ajax({
                 url: "<?php echo base_url(); ?>carrito-agregar",
-                data: {codigo:codigo_h,cantidad:cantidad_h},
+                data: {codigo:codigo_h,cantidad:cantidad_h,empresa: empresa,sucursal: sucursal},
                 type: 'post',
                 success: function (data){
                     var valor = JSON.parse(data);

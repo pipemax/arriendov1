@@ -62,6 +62,8 @@ create table arriendo(
     estado varchar(20),
     fecha_arriendo date
 );
+
+--alter table arriendo drop column cod_s;
 --alter table arriendo add fecha_arriendo date;
 
 create table detalle(
@@ -70,8 +72,13 @@ create table detalle(
     total_detalle int,
     id_a int,
     empresa int,
-    estado varchar(20)
+    estado varchar(20),
+    cod_sucursal int,
+    total_unitario int,
+    descuento int
 );
+
+--alter table detalle add descuento int;
 
 
 create table herramienta(
@@ -89,9 +96,12 @@ create table sucursal_herramienta(
     cod_sucursal int,
     stock int,
     precio int,
-    empresa int
+    empresa int,
+    descuento int,
+    f_inicio_d date,
+    f_final_d date
 );
---alter table sucursal_herramienta add empresa int;
+--alter table sucursal_herramienta add f_final_d date;
 --alter table herramienta modify nombre varchar(50);
 
 create table categoria(
@@ -119,8 +129,11 @@ create table carrito(
     cantidad int,
     total int,
     estado int,
-    empresa int
+    empresa int,
+    descuento int
 );
+
+--alter table carrito add column descuento int;
 
 create table empresa(
     cod_empresa int,
@@ -173,11 +186,11 @@ alter table comuna drop constraint pk_comuna;
 alter table administrador add constraint pk_administrador primary key(rut);
 alter table usuario add constraint pk_usuario primary key(rut);
 alter table arriendo add constraint pk_arriendo primary key(cod_arriendo);
-alter table detalle add constraint pk_detalle primary key(cod_h,id_a,empresa);
+alter table detalle add constraint pk_detalle primary key(cod_h,id_a,empresa,cod_sucursal);
 alter table herramienta add constraint pk_herramienta primary key(cod_herramienta,empresa);
 alter table categoria add constraint pk_categoria primary key(cod_categoria);
 alter table sucursal add constraint pk_sucursal primary key(cod_sucursal);
-alter table carrito add constraint pk_carrito primary key(cod_herramienta,rut,empresa);
+alter table carrito add constraint pk_carrito primary key(cod_herramienta,rut,empresa,cod_sucursal);
 alter table sucursal_herramienta add constraint pk_sucursal_herramienta primary key(cod_herramienta,cod_sucursal,empresa);
 alter table empresa add constraint pk_empresa primary key(cod_empresa);
 alter table region add constraint pk_region primary key(region_id);
@@ -193,9 +206,9 @@ alter table comuna add constraint pk_comuna primary key(comuna_id);
     drop constraint fk_categoria;
 */
 alter table arriendo drop constraint fk_usuario;
-alter table arriendo drop constraint fk_sucursal;
+alter table detalle drop constraint fk_sucursal;
 alter table detalle drop constraint fk_arriendo;
-alter table detalle drop constraint fk_herramienta;
+alter table detalle drop constraint fk_sucursal_herramienta;
 alter table herramienta drop constraint fk_categoria;
 alter table herramienta drop constraint fk_empresa;
 alter table carrito drop constraint fk_carrito;
@@ -212,9 +225,9 @@ alter table administrador drop constraint fk_administrador2;
 alter table administrador drop constraint fk_administrador3; 
 
 alter table arriendo add constraint fk_usuario foreign key(rut_u) references usuario(rut) on delete cascade;
-alter table arriendo add constraint fk_sucursal foreign key(cod_s) references sucursal(cod_sucursal) on delete cascade;
+alter table detalle add constraint fk_sucursal foreign key(cod_sucursal) references sucursal(cod_sucursal) on delete cascade;
 alter table detalle add constraint fk_arriendo foreign key(id_a) references arriendo(cod_arriendo) on delete cascade;
-alter table detalle add constraint fk_herramienta foreign key(cod_h,empresa) references herramienta(cod_herramienta,empresa) on delete cascade;
+alter table detalle add constraint fk_sucursal_herramienta foreign key(cod_h,empresa,cod_sucursal) references sucursal_herramienta(cod_herramienta,empresa,cod_sucursal) on delete cascade;
 alter table herramienta add constraint fk_categoria foreign key(cod_categoria) references categoria(cod_categoria) on delete cascade;
 alter table herramienta add constraint fk_empresa foreign key(empresa) references empresa(cod_empresa) on delete cascade;
 alter table carrito add constraint fk_carrito foreign key(rut) references usuario(rut) on delete cascade;

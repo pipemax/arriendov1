@@ -31,6 +31,10 @@
     <!-- your stylesheet with modifications -->
     <link href="<?php echo base_url(); ?>assets/css/custom.css" rel="stylesheet">
 
+     <!-- datatables -->
+    <link href="<?=base_url();?>assets/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="<?=base_url();?>assets/css/responsive.bootstrap4.min.css" rel="stylesheet" />
+
     <script src="<?php echo base_url(); ?>assets/js/jquery-1.11.0.min.js"></script>
     <script src="<?php echo base_url(); ?>assets/js/bootstrap.min.js"></script>
     <script src="<?php echo base_url(); ?>assets/js/jquery.cookie.js"></script>
@@ -45,12 +49,19 @@
     <script src="<?php echo base_url(); ?>assets/js/bootstrap-datepicker.es.min.js"></script>    
     <script src="<?php echo base_url(); ?>assets/js/URI.min.js"></script>  
     <script src="<?php echo base_url(); ?>assets/js/moment.js"></script>  
+
+    <!-- datatables js -->
+    <script src="<?=base_url();?>assets/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="<?=base_url();?>assets/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="<?=base_url();?>assets/js/dataTables.responsive.min.js" type="text/javascript"></script>    
+    <script src="<?=base_url();?>assets/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+    
     <link rel="shortcut icon" href="<?php echo base_url(); ?>assets/img/favicon.png">
 </head>
 
 <body>
 <div id="top">
-    <div class="row">       
+    <div class="row" style="margin-left: 0px; margin-right: 0px;">       
         <div class="col-md-12">     
             <div class="col-md-6 col-xs-12" data-animate="fadeInDown">   
                 <div class="row">
@@ -163,7 +174,7 @@
                         if($cantidad[0]->cantidad!=0)
                         { 
                     ?>
-                        <a class="btn btn-default navbar-toggle" href="<?php echo base_url(); ?>carrito">
+                        <a class="btn btn-default navbar-toggle" href="<?php echo base_url(); ?>carrito/">
                             <i class="fa fa-shopping-cart"></i>
                             <?php echo $cantidad[0]->cantidad; ?>
                         </a>
@@ -192,19 +203,19 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="200">Nosotros <b class="caret"></b></a>
                     <ul class="dropdown-menu">                        
                         <li>
-                            <a href="<?php echo base_url(); ?>mision">Misión</a>
+                            <a href="<?php echo base_url(); ?>mision/">Misión</a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url(); ?>vision">Visión</a>
+                            <a href="<?php echo base_url(); ?>vision/">Visión</a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url(); ?>quienes-somos">Quienes Somos</a>
+                            <a href="<?php echo base_url(); ?>quienes-somos/">Quienes Somos</a>
                         </li>                                        
                     </ul>
                 </li>
 
                 <li class="dropdown">
-                    <a href="<?php echo base_url(); ?>productos" class="dropdown" data-hover="dropdown" data-delay="200">Productos <b class="caret"></b></a>
+                    <a href="<?php echo base_url(); ?>productos/" class="dropdown" data-hover="dropdown" data-delay="200">Productos <b class="caret"></b></a>
                     <ul class="dropdown-menu">      
                         <?php //PHP
                             foreach($categorias as $valor)
@@ -220,7 +231,7 @@
                 </li>           
 
                 <li class="dropdown">
-                    <a href="<?php echo base_url(); ?>contacto" class="dropdown-toggle" data-delay="200">Contacto</a>
+                    <a href="<?php echo base_url(); ?>contacto/" class="dropdown-toggle" data-delay="200">Contacto</a>
                 </li>
                 <?php //PHP
                     if($this->session->estado==TRUE)
@@ -230,10 +241,10 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="200">Mi Cuenta <b class="caret"></b></a>
                         <ul class="dropdown-menu">                        
                             <li>
-                                <a href="category.html">Mis arriendos</a>
+                                <a href="<?php echo base_url(); ?>mi-cuenta">Mis arriendos</a>
                             </li>
                             <li>
-                                <a href="category.html">Mis datos personales</a>
+                                <a href="<?php echo base_url(); ?>mis-datos">Mis datos personales</a>
                             </li>
                             <li>
                                 <a href="<?php echo base_url(); ?>salir">Cerrar Sesión</a>
@@ -296,54 +307,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="sucursal-modal" tabindex="-1" role="dialog" aria-labelledby="Sucursal" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="Login">Sucursales</h4></center>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <center>
-                            <label for="sucursales">Sucursal Actual</label>
-                        </center>
-                        <center>
-                            <button class="btn btn-primary" type="button">
-                                SUCURSAL <?=$sucursal[0]->nombre?>
-                            </button>
-                        </center>
-                    </div>
-                    <div class="form-group">
-                        <center><label for="sucursales">Cambiar de Sucursal</label></center>
-                        <select class="form-control" id="sucursales">
-                            <?php //PHP
-                                foreach($sucursales as $valor)
-                                {
-                            ?>
-                                <option value="<?=$valor->cod_sucursal?>"><?=$valor->nombre?></option>
-                            <?php //PHP
-                                } 
-                            ?>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <center><label for="datos">Información de Sucursal</label></center>
-                        <ul class="list-group" id="datos">
-                            <li class="list-group-item"><?=$sucursal[0]->direccion?></li>
-                            <li class="list-group-item"><?=$sucursal[0]->telefono?></li>
-                        </ul>
-                    </div>
-                    <p class="text-center">
-                        <button class="btn btn-success" id="sucursal_guardar" type="button"><i class="fa fa-check"></i> Guardar</button>
-                        <button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
-                    </p>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script>
     $(document).ready(function(){
@@ -372,15 +336,24 @@
                 success: function (data){
                     if(data!=='FALSE'){
                         var datos = JSON.parse(data);
-                        select = document.getElementById('comuna_top');                       
+                        select = document.getElementById('comuna_top');         
+                        var contador = 0;              
+                        var comuna_actual = '<?php echo $this->session->comuna;?>';
                         for(var i=0;i<datos.length;i++){
                             option = document.createElement('option');
                             option.value = datos[i].comuna_id;
                             option.innerHTML = datos[i].comuna_nombre;
+                            if(datos[i].comuna_id===comuna_actual){
+                                contador++;
+                            }
                             select.append(option);
                         }
                         $("#comuna_top").attr('readonly', false);    
-                        select.value = '<?php echo $this->session->comuna;?>';        
+                        if(contador>0){
+                            select.value = '<?php echo $this->session->comuna;?>';     
+                        }else{
+                            select.value = '';
+                        }   
                     }
                 }
             });                        

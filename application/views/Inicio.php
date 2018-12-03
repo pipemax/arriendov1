@@ -34,7 +34,7 @@
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="comuna">Seleccione Comuna</label>
-                                <select class="form-control input-lg" name="comuna" id="comuna"></select>
+                                <select class="form-control input-lg" name="comuna" id="comuna" required></select>
                             </div>
                         </div>
                     </div>
@@ -194,6 +194,12 @@
                 $("#comuna").attr('readonly', true);
                 $("#comuna").children().remove();
                 establecerComuna(region);
+                select = document.getElementById('comuna'); 
+                option = document.createElement('option');
+                option.value = "";
+                option.innerHTML = "Seleccione una comuna";
+                select.append(option);
+                select.value = "";
             });
 
             function establecerComuna(region){
@@ -204,15 +210,24 @@
                     success: function (data){
                         if(data!=='FALSE'){
                             var datos = JSON.parse(data);
-                            select = document.getElementById('comuna');                       
+                            select = document.getElementById('comuna');  
+                            var contador = 0;              
+                            var comuna_actual = '<?php echo $this->session->comuna;?>';                     
                             for(var i=0;i<datos.length;i++){
                                 option = document.createElement('option');
                                 option.value = datos[i].comuna_id;
                                 option.innerHTML = datos[i].comuna_nombre;
+                                if(datos[i].comuna_id===comuna_actual){
+                                    contador++;
+                                }
                                 select.append(option);
                             }
                             $("#comuna").attr('readonly', false);
-                            select.value = '<?php echo $this->session->comuna;?>';   
+                            if(contador>0){
+                                select.value = '<?php echo $this->session->comuna;?>';     
+                            }else{
+                                select.value = '';
+                            }   
                         }
                     }
                 });

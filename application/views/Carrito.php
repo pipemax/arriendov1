@@ -28,7 +28,7 @@
 							<?php 
 								$date1 = DateTime::createFromFormat('d/m/Y', $this->session->inicio);
 								$date2 = DateTime::createFromFormat('d/m/Y', $this->session->fin);
-							; ?>
+							?>
 							<input class="form-control" type="text" id="cant_dias" value="<?php echo $date2->diff($date1)->format("%a");; ?>" readonly>
 						</div>     
 					</div>
@@ -41,6 +41,7 @@
 									<th class="col-md-4" style="text-align:center"></th>
 									<th class="col-md-1" style="text-align:center">Cantidad</th>
 									<th class="col-md-1" style="text-align:center">Precio unitario</th>
+									<th class="col-md-1" style="text-align:center">Descuento</th>
 									<th class="col-md-1" style="text-align:center">Total </th>
 									<th class="col-md-1" style="text-align:center"></th>
 								</tr>
@@ -69,20 +70,24 @@
 									}
 								?>
 									<td class="col-md-1 table-primary" style="text-align:center">
-										<a href="#">
+										<a href="<?php echo base_url(); ?>detalle/<?php echo $herramienta->cod_herramienta;?>/<?php echo $herramienta->cod_sucursal;?>/<?php echo $herramienta->cod_empresa;?>">
 											<img src="<?php echo base_url(); ?>assets/herramientas/<?php echo $herramienta->url_foto; ?>" alt="<?php echo $herramienta->nombre; ?>">
 										</a>
 									</td>
 									<td class="col-md-4">
-										<a href="<?php echo base_url(); ?>detalle/<?php echo $herramienta->cod_herramienta; ?>"><?php echo $herramienta->nombre; ?></a>
+										<a class="btn btn-default" href="<?php echo base_url(); ?>detalle/<?php echo $herramienta->cod_herramienta;?>/<?php echo $herramienta->cod_sucursal;?>/<?php echo $herramienta->cod_empresa;?>"><?php echo $herramienta->nombre; ?></a>
+										<br>
+										<button type="button" class="btn btn-info btn-xs" readonly><?php echo $herramienta->nombree; ?></button>
+										<button type="button" class="btn btn-danger btn-xs" readonly>SUCURSAL <?php echo $herramienta->nombres; ?></button>
 									</td>
 									<?php 
 										if($herramienta->cantidad <= $herramienta->disponibilidad)
 										{
 									?>
 										<td class="col-md-1">
-											<input type="number" id="<?php echo $herramienta->cod_herramienta; ?>-cantidad" style="width:100%" value="<?php echo $herramienta->cantidad; ?>" min="1" max="<?php echo $herramienta->disponibilidad; ?>" class="form-control cantidad">
-											<input class="hidden" id="<?php echo $herramienta->cod_herramienta; ?>-respaldo" value="<?php echo $herramienta->cantidad; ?>">
+											<button class="hidden" id="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal; ?>-datos" value="<?php echo $herramienta->cod_sucursal."-".$herramienta->cod_empresa;?>"></button>
+											<input type="number" id="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal; ?>-cantidad" style="width:100%" value="<?php echo $herramienta->cantidad; ?>" min="1" max="<?php echo $herramienta->disponibilidad; ?>" class="form-control cantidad">
+											<input class="hidden" id="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal; ?>-respaldo" value="<?php echo $herramienta->cantidad; ?>">
 										</td>
 									<?php
 										}
@@ -96,9 +101,11 @@
 										}									
 									?>									
 									<td class="col-md-1" style="text-align:center">$<?php echo $herramienta->precio; ?></td>
-									<input class="hidden" id="<?php echo $herramienta->cod_herramienta; ?>-precio" value="<?php echo $herramienta->precio; ?>">
-									<td class="col-md-1" id="<?php echo $herramienta->cod_herramienta; ?>-total" style="text-align:center" style="text-align:center">$<?php echo $herramienta->total; ?></td>
-									<td class="col-md-1" style="text-align:center"><button type="button" class="btn btn-default btn-xs eliminar_h" value="<?php echo $herramienta->cod_herramienta; ?>"><i class="fa fa-trash-o"></i></button>
+									<input class="hidden" id="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal; ?>-descuento" value="<?php echo $herramienta->descuento; ?>">
+									<td class="col-md-1" style="text-align:center"><?php echo $herramienta->descuento;?>%</td>
+									<input class="hidden" id="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal; ?>-precio" value="<?php echo $herramienta->precio; ?>">
+									<td class="col-md-1" id="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal; ?>-total" style="text-align:center">$<?php echo $herramienta->total; ?></td>
+									<td class="col-md-1" style="text-align:center"><button type="button" class="btn btn-default btn-xs eliminar_h" value="<?php echo $herramienta->cod_herramienta."-".$herramienta->cod_sucursal."-".$herramienta->cod_empresa; ?>"><i class="fa fa-trash-o"></i></button>
 									</td>
 								</tr>
 								<?php
@@ -177,18 +184,23 @@
 				var division = ($(this)[0].id).split("-");
 				var id = $(this)[0].id;
 				var codigo_producto = division[0];
-				var cantidad_respaldo = parseInt($("#"+division[0]+"-respaldo").val());
+				var datos = ($("#"+codigo_producto+"-"+division[1]+"-datos").val()).split("-");
+				var sucursal = datos[0];
+				var empresa = datos[1];
+				var cantidad_respaldo = parseInt($("#"+division[0]+"-"+division[1]+"-respaldo").val());
 				document.getElementById(id).disabled = true;
 				if(cantidad_actual<cantidad_respaldo){
 					$.ajax({
 						url: "<?php echo base_url(); ?>carrito-quitar",
-						data: {codigo: codigo_producto,cantidad: (cantidad_respaldo-cantidad_actual)},
+						data: {codigo: codigo_producto,cantidad: (cantidad_respaldo-cantidad_actual),sucursal: sucursal,empresa:empresa},
 						type: "post",
 						success: function(data){
 							var conversion = JSON.parse(data);
 							if(conversion.estado=='TRUE'){
-								$("#"+division[0]+"-total").html("$"+$("#"+division[0]+"-precio").val()*cantidad_actual);
-								$("#"+division[0]+"-respaldo").val(cantidad_actual);
+								var total_x = $("#"+division[0]+"-"+division[1]+"-precio").val()*cantidad_actual;
+								var total_descuento = (total_x - total_x*($("#"+division[0]+"-"+division[1]+"-descuento").val()/100));
+								$("#"+division[0]+"-"+division[1]+"-total").html("$"+Math.round(total_descuento));
+								$("#"+division[0]+"-"+division[1]+"-respaldo").val(cantidad_actual);
 								Actualizar_Total();
 								document.getElementById(id).disabled = false;
 							}else if(conversion.estado=='LOGIN'){                                
@@ -215,13 +227,15 @@
 				}else if(cantidad_actual>cantidad_respaldo){
 					$.ajax({
 						url: "<?php echo base_url(); ?>carrito-agregar",
-						data: {codigo: codigo_producto,cantidad: (cantidad_actual-cantidad_respaldo)},
+						data: {codigo: codigo_producto,cantidad: (cantidad_actual-cantidad_respaldo),sucursal: sucursal,empresa: empresa},
 						type: "post",
 						success: function(data){
 							var conversion = JSON.parse(data);
 							if(conversion.estado=='TRUE'){
-								$("#"+division[0]+"-total").html("$"+$("#"+division[0]+"-precio").val()*cantidad_actual);
-								$("#"+division[0]+"-respaldo").val(cantidad_actual);
+								var total_x = $("#"+division[0]+"-"+division[1]+"-precio").val()*cantidad_actual;
+								var total_descuento = (total_x - total_x*($("#"+division[0]+"-"+division[1]+"-descuento").val()/100));
+								$("#"+division[0]+"-"+division[1]+"-total").html("$"+Math.round(total_descuento));
+								$("#"+division[0]+"-"+division[1]+"-respaldo").val(cantidad_actual);
 								Actualizar_Total();
 								document.getElementById(id).disabled = false;
 							}else if(conversion.estado=='LOGIN'){                                
@@ -278,10 +292,13 @@
 			}
 
 			$(".eliminar_h").click(function(){
-				var codigo = $(this)[0].value;
+				var datos = ($(this)[0].value).split("-");
+				var codigo = datos[0];
+				var sucursal = datos[1];
+				var empresa = datos[2];
 				$.ajax({
 					url: "<?php echo base_url(); ?>carrito-borrar",
-					data: {codigo: codigo},
+					data: {codigo: codigo,sucursal: sucursal,empresa: empresa},
 					type: "post",
 					success: function(data){
 						var conversion = JSON.parse(data);

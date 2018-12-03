@@ -19,7 +19,7 @@
                     </ul>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 col-xs-12">
                             
                     <div class="panel panel-default sidebar-menu">
                         <div class="panel-heading">
@@ -70,7 +70,7 @@
                     if($herramienta!=FALSE)
                     { 
                 ?>
-                    <div class="col-md-9">
+                    <div class="col-md-9 col-xs-12">
                         <div class="row" id="productMain">
                             <div class="col-sm-6">
                                 <div id="mainImage">
@@ -80,7 +80,17 @@
                                 <?php //PHP
                                     if($herramienta[0]->stock>0)
                                     {
-                                ?>
+                                ?>  <?php 
+                                        if($herramienta[0]->descuento!=null)
+                                    {
+                                    ?>
+                                        <div class="ribbon new">
+                                            <div class="theribbon" style="text-align:center">OFERTA <?php echo $herramienta[0]->descuento;?>%</div>
+                                            <div class="ribbon-background"></div>
+                                        </div>
+                                    <?php
+                                        }
+                                    ?>
                                     <div class="ribbon gift">
                                         <div class="theribbon" style="text-align:center">STOCK <?php echo $herramienta[0]->stock; ?></div>
                                         <div class="ribbon-background"></div>
@@ -104,12 +114,38 @@
                                     <h2 class="text-center"><?php echo $herramienta[0]->nombre; ?></h2>
                                     <p class="goToDescription"><a href="#details" class="scroll-to">Presionar para ver más detalles</a>
                                     </p>
-                                    <p class="price">$<?php echo number_format($herramienta[0]->precio, 0,'.', '.'); ?></p>
+                                    <button type="button" class="btn btn-info btn-block" readonly><?php echo $herramienta[0]->empresan; ?></button>
+                                    <button type="button" class="btn btn-danger btn-block" readonly>SUCURSAL <?php echo $herramienta[0]->nombres; ?></button>                                    
                                     
                                     <?php //PHP
                                         if($herramienta[0]->stock>0)
                                         {
                                     ?>
+                                         <?php
+                                            if($herramienta[0]->descuento!=null)
+                                            {
+                                        ?>
+                                            <div class="row">
+                                                <div class="col-md-6 col-xs-12">
+                                                    <br>
+                                                    <center style="font-size: 18px;">ANTES</center>
+                                                    <p class="price" style="margin-top: 5px; margin-bottom: 10px;"><del>$<?php echo number_format($herramienta[0]->precio, 0,'.', '.'); ?></del></p>
+                                                </div>
+                                                <div class="col-md-6 col-xs-12">
+                                                    <br>
+                                                    <center style="font-size: 18px;">AHORA</center>
+                                                    <p class="price" style="margin-top: 5px; margin-bottom: 10px;">$<?php echo number_format(round($herramienta[0]->precio - $herramienta[0]->precio*($herramienta[0]->descuento/100)), 0,'.', '.'); ?></p>
+                                                </div>
+                                            </div>
+                                        <?php 
+                                            }
+                                            else
+                                            {
+                                        ?>
+                                            <p class="price" id="precio">$<?php echo number_format($herramienta[0]->precio, 0,'.', '.'); ?></p>
+                                        <?php
+                                            }
+                                        ?>
                                         <center>
                                             <div class="form-group" style="width: 50%">
                                                 <label for="cantidad">Cantidad</label>
@@ -133,7 +169,7 @@
                                             if($herramienta[0]->stock>0)
                                             {
                                         ?>
-                                            <button class="btn btn-primary" value="<?php echo $herramienta[0]->cod_herramienta; ?>" id="carrito-detalle"><i class="fa fa-shopping-cart"></i> Agregar al Carro</button> 
+                                            <button class="btn btn-primary" value="<?php echo $herramienta[0]->cod_herramienta."-".$herramienta[0]->cod_sucursal."-".$herramienta[0]->empresa;?>" id="carrito-detalle"><i class="fa fa-shopping-cart"></i> Agregar al Carro</button> 
                                         <?php //PHP
                                             }
                                         ?>
@@ -152,6 +188,20 @@
                     </div>
                 <?php //PHP
                     }
+                    else
+                    {
+                ?>
+                    
+                    <div class="col-lg-9">
+                        <div class="box text-center py-5">
+                            <h1><i class="fa fa-warning"></i></h1>
+                            <h2 class="text-muted">Lo sentimos - no hay registros de esta herramienta en la sucursal seleccionada</h2>
+                            <p class="text-center">Esto puede ser un error nuestro, por favor, comuníquese con nosotros <a href="<?php echo base_url();?>contacto">contacto</a>.</p>
+                            <p class="buttons"><a href="<?php echo base_url();?>productos/" class="btn btn-primary"><i class="fa fa-home"></i> Volver a los productos</a></p>
+                        </div>
+                    </div> 
+                <?php
+                    }
                 ?>
             </div>
         </div>
@@ -159,11 +209,15 @@
         <script>
             $(document).ready(function(){
                 $("#carrito-detalle").click(function(){
-                    var codigo = $(this)[0].value;
-                    var cantidad = $("#cantidad").val();
+                    var array = $(this)[0].value;
+                    var datos = array.split("-");
+                    var codigo_h = datos[0];
+                    var sucursal = datos[1];
+                    var empresa = datos[2];
+                    var cantidad_h = $("#cantidad").val();
                     $.ajax({
                         url: "<?php echo base_url(); ?>carrito-agregar",
-                        data: {codigo:codigo,cantidad:cantidad},
+                        data: {codigo:codigo_h,cantidad:cantidad_h,empresa: empresa,sucursal: sucursal},
                         type: 'post',
                         success: function (data){
                             var valor = JSON.parse(data);

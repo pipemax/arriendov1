@@ -96,7 +96,7 @@
                                     <div class="col-lg-4 col-md-6 mt-5">
                                         <div class="card card-bordered">
                                             <img class="card-img-top img-fluid" src="<?php echo str_replace("admin/","",base_url());?>assets/herramientas/<?php echo $producto->url_foto;?>" alt="image">
-                                            <div class="card-body">
+                                            <div class="card-body">                                                
                                                 <h5 class="title" style="text-align:center">CODIGO: <?php echo $producto->cod_herramienta;?></h5>
                                                 <h6 class="title" style="text-align:center" id="<?php echo $producto->cod_herramienta;?>-N"><?php echo $producto->nombre;?></h6>
                                                 <p class="card-text" style="text-align:justify">
@@ -153,7 +153,7 @@
                             {
                         ?>
                             <div class="alert alert-info">
-                                No hay herramientas registradas en la base de datos.
+                                No hay herramientas en la base de datos o no hay resultados de la búsqueda realizada
                             </div>
                         <?php
                             }
@@ -363,7 +363,7 @@
                                         icon: "success",          
                                     })
                                     .then((value) => {                                        
-                                        window.location.href = "<?php echo base_url()?>herramientas/"                                        
+                                        window.location.reload();                                        
                                     });
                                 }else{
                                     swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 
@@ -395,7 +395,7 @@
                                         icon: "success",          
                                     })
                                     .then((value) => {                                        
-                                        window.location.href = "<?php echo base_url()?>herramientas/"                                        
+                                        window.location.reload();                                        
                                     });
                                 }else{
                                     swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 
@@ -443,7 +443,7 @@
                                                 icon: "success",          
                                             })
                                             .then((value) => {                                        
-                                                window.location.href = "<?php echo base_url()?>herramientas/"                                        
+                                                window.location.reload();                                          
                                             });
                                         }else{
                                             swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 

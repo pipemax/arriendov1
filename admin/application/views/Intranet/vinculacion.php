@@ -61,6 +61,7 @@
                                             <tr>                                                
                                                 <th class="all">Nombre Sucursal</th>
                                                 <th class="desktop">Vinculado</th>
+                                                <th class="desktop">Descuento</th>
                                                 <th class="desktop">Acción</th> 
                                             </tr>
                                         </thead>
@@ -82,10 +83,27 @@
                                                     else
                                                     {
                                                 ?>
-                                                    <button class="btn btn-danger"><span class="fa fa-remove"></span></button>
+                                                    <button class="btn btn-danger" disabled><span class="fa fa-remove"></span></button>
                                                 <?php
                                                     }
                                                 ?>
+                                                </td>
+                                                <td>
+                                                    <?php 
+                                                    if($valor->descuento!=null)
+                                                    {
+                                                        echo $valor->descuento." %";
+                                                    ?>
+                                                        
+                                                    <?php 
+                                                    }
+                                                    else
+                                                    {
+                                                    ?>
+                                                        NO
+                                                    <?php 
+                                                    }
+                                                    ?>
                                                 </td>
                                                 <td>
                                                 <?php 
@@ -164,7 +182,30 @@
                                             <input type="number" class="form-control" id="precio_nueva_vinculacion" name="precio_nueva_vinculacion" placeholder="Ingrese precio de arriendo por día" min="1000" max="10000000" required>
                                         </div>
                                     </div> 
-                                </div>                                
+                                </div>   
+                                <div class="row">                                  
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="descuento_nueva_vinculacion">Porcentaje descuento</label>
+                                            <input type="number" class="form-control" id="descuento_nueva_vinculacion" name="descuento_nueva_vinculacion" placeholder="Ingrese el descuento" min="1" max="100" step="1">
+                                            <p style="font-size: 12px; color: red;" id="error_descuento_vinculacion"></p>
+                                        </div>
+                                    </div>      
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="fecha_inicio_nueva_vinculacion">Fecha inicio descuento</label>
+                                            <input type="text" class="form-control" id="fecha_inicio_nueva_vinculacion" name="fecha_inicio_nueva_vinculacion" placeholder="Fecha inicio">
+                                            <p style="font-size: 12px; color: red;" id="error_fecha_i_vinculacion"></p>
+                                        </div>
+                                    </div> 
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="fecha_final_nueva_vinculacion">Fecha final descuento</label>
+                                            <input type="text" class="form-control" id="fecha_final_nueva_vinculacion" name="fecha_final_nueva_vinculacion" placeholder="Fecha fin">
+                                            <p style="font-size: 12px; color: red;" id="error_fecha_f_vinculacion"></p>
+                                        </div>
+                                    </div> 
+                                </div>                              
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                     <button type="submit" id="vincular_herramienta" class="btn btn-primary">Vincular</button>
@@ -220,7 +261,30 @@
                                             <input type="number" class="form-control" id="precio_vinculacion_modificacion" name="precio_vinculacion_modificacion" placeholder="Ingrese precio de arriendo por día" min="1000" max="10000000" required>
                                         </div>
                                     </div> 
-                                </div>                                
+                                </div>  
+                                <div class="row">                                  
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="descuento_vinculacion_modificacion">Porcentaje descuento</label>
+                                            <input type="number" class="form-control" id="descuento_vinculacion_modificacion" name="descuento_vinculacion_modificacion" placeholder="Ingrese el descuento" min="1" max="100" step="1">
+                                            <p style="font-size: 12px; color: red;" id="error_descuento"></p>
+                                        </div>
+                                    </div>      
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="fecha_inicio_vinculacion_modificacion">Fecha inicio descuento</label>
+                                            <input type="text" class="form-control" id="fecha_inicio_vinculacion_modificacion" name="fecha_inicio_vinculacion_modificacion" placeholder="Fecha inicio">
+                                            <p style="font-size: 12px; color: red;" id="error_fecha_i"></p>
+                                        </div>
+                                    </div> 
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="fecha_final_vinculacion_modificacion">Fecha final descuento</label>
+                                            <input type="text" class="form-control" id="fecha_final_vinculacion_modificacion" name="fecha_final_vinculacion_modificacion" placeholder="Fecha fin">
+                                            <p style="font-size: 12px; color: red;" id="error_fecha_f"></p>
+                                        </div>
+                                    </div> 
+                                </div>                              
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                     <button type="submit" id="vinculacion_modificacion" class="btn btn-primary">Modificar</button>
@@ -238,6 +302,7 @@
                         "columns": [
                             { "data": "Nombre" },  
                             { "data": "Vinculacion" },
+                            { "data": "Descuento"},
                             { "data": "Accion" }
                         ],
                         language: {
@@ -250,7 +315,7 @@
                         bInfo: false
                     });
 
-                    $(".vincular").click(function(){
+                    $("#tabla_vinculacion .vincular").click(function(){
                         var codigo = this.value;
                         var herramienta = "<?php echo $herramienta;?>";
                         $("#sucursal_nueva_vinculacion").val(codigo);
@@ -258,8 +323,9 @@
                         $("#nueva_vinculacion").modal();
                     });
 
-                    $(".desvincular").click(function(){
+                    $("#tabla_vinculacion .desvincular").click(function(){
                         var codigo = this.value;
+                        console.log(codigo);
                         var nombre_sucursal = $("#"+codigo+"-N").html();
                         var herramienta = "<?php echo $herramienta;?>";
                         var nombre_herramienta = $("#"+herramienta+"-N").html();
@@ -310,7 +376,27 @@
                         });                        
                     });
 
-                    $(".modificar").click(function(){
+                    $('#fecha_inicio_vinculacion_modificacion').datepicker({
+                        startDate: new Date(),
+                        language: "es"
+                    });
+
+                    $('#fecha_final_vinculacion_modificacion').datepicker({
+                        startDate: new Date(),
+                        language: "es"            
+                    });
+
+                    $('#fecha_inicio_nueva_vinculacion').datepicker({
+                        startDate: new Date(),
+                        language: "es"
+                    });
+
+                    $('#fecha_final_nueva_vinculacion').datepicker({
+                        startDate: new Date(),
+                        language: "es"            
+                    });
+
+                    $("#tabla_vinculacion .modificar").click(function(){
                         var codigo = this.value;
                         var nombre_sucursal = $("#"+codigo+"-N").html();
                         var herramienta = "<?php echo $herramienta;?>";
@@ -326,84 +412,186 @@
                                     $("#herramienta_vinculacion_modificacion").val(valor.cod_herramienta);
                                     $("#stock_vinculacion_modificacion").val(valor.stock);
                                     $("#precio_vinculacion_modificacion").val(valor.precio);
+                                    $("#descuento_vinculacion_modificacion").val(valor.descuento);
+                                    $("#fecha_inicio_vinculacion_modificacion").val(valor.f_inicio_d);
+                                    $("#fecha_final_vinculacion_modificacion").val(valor.f_final_d);
                                     $("#vinculacion_modificacion").modal();
                                 }else{
                                     swal("¡Ha ocurrido un error!", "Ha ocurrido un error interno", "error"); 
                                 }
                             }
-                        });
+                        });                        
                     });
 
-                    $("#form_vinculacion_modificacion").submit(function(e){
-                        $.ajax({
-                            url: "<?=base_url();?>modificar-vinculacion",
-                            data: $('#form_vinculacion_modificacion').serialize(),
-                            type: 'post',
-                            success: function (data){
-                                console.log(data);
-                                var valor = JSON.parse(data);
-                                if(valor.estado=='TRUE'){
-                                    swal({
-                                        buttons: {
-                                            recargar: {
-                                                text: "Aceptar",
-                                                value: "yes",
-                                            },
-                                            cancel: "Cerrar",
-                                        },     
-                                        title: "¡Modificación Exitosa!",
-                                        text: valor.mensaje,
-                                        icon: "success",          
-                                    })
-                                    .then((value) => {                                        
-                                        window.location.reload();                                        
-                                    });
-                                }else{
-                                    swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 
-                                }
+                    $("#form_vinculacion_modificacion").submit(function(e){                        
+                        var inicio = $("#fecha_inicio_vinculacion_modificacion").val();
+                        var final = $("#fecha_final_vinculacion_modificacion").val();
+                        var descuento = $("#descuento_vinculacion_modificacion").val();
+                        var f_i = moment(inicio,"DD/MM/YYYY"); 
+                        var f_f = moment(final,"DD/MM/YYYY");
+                        var verificador_descuento = 0;
+                        var verificador_fecha_i = 0;
+                        var verificador_fecha_f = 0;
+                        if(descuento!==""){
+                            verificador_descuento = 1;
+                        }else{
+                            verificador_descuento = 0;
+                        }
+                        if(inicio!==""){
+                            verificador_fecha_i = 1;
+                        }else{
+                            verificador_fecha_i = 0;
+                        }
+                        if(final!==""){
+                            verificador_fecha_f = 1;
+                        }else{
+                            verificador_fecha_f = 0;
+                        }
+                        
+                        if((verificador_descuento==1 && verificador_fecha_i==1 && verificador_fecha_f==1)
+                            || (verificador_descuento==0 && verificador_fecha_i==0 && verificador_fecha_f==0)){
+                            if(verificador_fecha_i==1 && verificador_fecha_f==1 && f_f.diff(f_i)<=0){
+                                swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
+                            }else{
+                                $.ajax({
+                                    url: "<?=base_url();?>modificar-vinculacion",
+                                    data: $('#form_vinculacion_modificacion').serialize(),
+                                    type: 'post',
+                                    success: function (data){
+                                        console.log(data);
+                                        var valor = JSON.parse(data);
+                                        if(valor.estado=='TRUE'){
+                                            swal({
+                                                buttons: {
+                                                    recargar: {
+                                                        text: "Aceptar",
+                                                        value: "yes",
+                                                    },
+                                                    cancel: "Cerrar",
+                                                },     
+                                                title: "¡Modificación Exitosa!",
+                                                text: valor.mensaje,
+                                                icon: "success",          
+                                            })
+                                            .then((value) => {                                        
+                                                window.location.reload();                                        
+                                            });
+                                        }else{
+                                            swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 
+                                        }
+                                    }
+                                });
                             }
-                        });
+                        }else{
+                            if(verificador_descuento==0){
+                                $("#error_descuento").html("Debe ingresar el descuento del producto");
+                            }else{
+                                $("#error_descuento").html("");
+                            }
+                            if(verificador_fecha_i==0){
+                                $("#error_fecha_i").html("Debe ingresar la fecha inicial del descuento");
+                            }else{
+                                $("#error_fecha_i").html("");
+                            }
+                            if(verificador_fecha_f==0){
+                                $("#error_fecha_f").html("Debe ingresar la fecha final del descuento");
+                            }else{
+                                $("#error_fecha_f").html("");
+                            }
+                        }
                         e.preventDefault();
                     });
 
                     $("#form_nueva_vinculacion").submit(function(e){
-                        $.ajax({
-                            url: "<?php echo base_url();?>vincular-herramienta",     
-                            data: $("#form_nueva_vinculacion").serialize(),                  
-                            type: "post",
-                            success: function(data){
-                                console.log(data);
-                                var valor = JSON.parse(data);
-                                if(valor.estado=='TRUE'){
-                                    swal({
-                                        buttons: {
-                                            recargar: {
-                                                text: "Aceptar",
-                                                value: "yes",
-                                            },
-                                            cancel: "Cerrar",
-                                        },     
-                                        title: "¡Vinculación Exitosa!",
-                                        text: valor.mensaje,
-                                        icon: "success",          
-                                    })
-                                    .then((value) => {                                        
-                                        window.location.reload();                                        
-                                    });
-                                }else{
-                                    swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 
-                                }
-                            }                            
-                        });        
+                         var inicio = $("#fecha_inicio_nueva_vinculacion").val();
+                        var final = $("#fecha_final_nueva_vinculacion").val();
+                        var descuento = $("#descuento_nueva_vinculacion").val();
+                        var f_i = moment(inicio,"DD/MM/YYYY"); 
+                        var f_f = moment(final,"DD/MM/YYYY");
+                        var verificador_descuento = 0;
+                        var verificador_fecha_i = 0;
+                        var verificador_fecha_f = 0;
+                        if(descuento!==""){
+                            verificador_descuento = 1;
+                        }else{
+                            verificador_descuento = 0;
+                        }
+                        if(inicio!==""){
+                            verificador_fecha_i = 1;
+                        }else{
+                            verificador_fecha_i = 0;
+                        }
+                        if(final!==""){
+                            verificador_fecha_f = 1;
+                        }else{
+                            verificador_fecha_f = 0;
+                        }
+                        if((verificador_descuento==1 && verificador_fecha_i==1 && verificador_fecha_f==1)
+                            || (verificador_descuento==0 && verificador_fecha_i==0 && verificador_fecha_f==0)){
+                            if(verificador_fecha_i==1 && verificador_fecha_f==1 && f_f.diff(f_i)<=0){
+                                swal("La fecha final no puede ser menor o igual a la inicial", "Modifique las fechas!", "error"); 
+                            }else{
+                                $.ajax({
+                                    url: "<?php echo base_url();?>vincular-herramienta",     
+                                    data: $("#form_nueva_vinculacion").serialize(),                  
+                                    type: "post",
+                                    success: function(data){
+                                        console.log(data);
+                                        var valor = JSON.parse(data);
+                                        if(valor.estado=='TRUE'){
+                                            swal({
+                                                buttons: {
+                                                    recargar: {
+                                                        text: "Aceptar",
+                                                        value: "yes",
+                                                    },
+                                                    cancel: "Cerrar",
+                                                },     
+                                                title: "¡Vinculación Exitosa!",
+                                                text: valor.mensaje,
+                                                icon: "success",          
+                                            })
+                                            .then((value) => {                                        
+                                                window.location.reload();                                        
+                                            });
+                                        }else{
+                                            swal("¡Ha ocurrido un error!", valor.mensaje, "error"); 
+                                        }
+                                    }                            
+                                });    
+                            }
+                        }else{
+                            if(verificador_descuento==0){
+                                $("#error_descuento_vinculacion").html("Debe ingresar el descuento del producto");
+                            }else{
+                                $("#error_descuento_vinculacion").html("");
+                            }
+                            if(verificador_fecha_i==0){
+                                $("#error_fecha_i_vinculacion").html("Debe ingresar la fecha inicial del descuento");
+                            }else{
+                                $("#error_fecha_i_vinculacion").html("");
+                            }
+                            if(verificador_fecha_f==0){
+                                $("#error_fecha_f_vinculacion").html("Debe ingresar la fecha final del descuento");
+                            }else{
+                                $("#error_fecha_f_vinculacion").html("");
+                            }
+                        }    
                         e.preventDefault();
                     });
 
                     $("#nueva_vinculacion").on("hidden.bs.modal", function () {
                         $("#form_nueva_vinculacion")[0].reset();
+                        $("#error_descuento_vinculacion").html("");
+                        $("#error_fecha_i_vinculacion").html("");
+                        $("#error_fecha_f_vinculacion").html("");
                     });
 
                     $("#vinculacion_modificacion").on("hidden.bs.modal", function () {
                         $("#form_vinculacion_modificacion")[0].reset();
+                        $("#error_descuento").html("");
+                        $("#error_fecha_i").html("");
+                        $("#error_fecha_f").html("");
                     });
                 });
             </script>

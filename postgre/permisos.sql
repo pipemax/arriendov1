@@ -30,11 +30,13 @@ GRANT EXECUTE ON FUNCTION INICIO_SESION_ADMIN TO ADMINS;
 GRANT EXECUTE ON FUNCTION VALIDACION(int) TO ADMINS;
 GRANT EXECUTE ON FUNCTION CHECKADMIN TO ADMINS;
 GRANT EXECUTE ON FUNCTION VALIDAR_LOGIN_ADMIN TO ADMINS;
+grant execute on function verificar_descuentos to pipemax;
 GRANT USAGE ON SEQUENCE SUCURSAL_AI TO ADMINS;
 
 
 -- SE OTORGAN LOS PERMISOS DE SELECT A PIPEMAX SOBRE LAS TABLAS
 GRANT SELECT ON public.usuario TO pipemax;
+GRANT UPDATE ON public.usuario TO pipemax;
 GRANT SELECT ON public.arriendo TO pipemax;
 GRANT SELECT ON public.detalle TO pipemax;
 GRANT SELECT ON public.herramienta TO pipemax;
@@ -53,7 +55,8 @@ GRANT INSERT ON public.detalle TO pipemax;
 GRANT SELECT ON public.region TO pipemax;
 GRANT SELECT ON public.provincia to pipemax;
 GRANT SELECT ON public.comuna to pipemax;
-
+GRANT SELECT ON public.empresa to pipemax;
+GRANT UPDATE ON public.sucursal_herramienta to pipemax;
 
 
 

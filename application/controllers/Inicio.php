@@ -15,12 +15,13 @@ class Inicio extends CI_Controller
 			$fecha_manana = strtotime("+1 day");
 			$this->session->inicio = date("d/m/Y",$fecha_hoy);
 			$this->session->fin = date("d/m/Y",$fecha_manana);
-		}		
+		}			
 	}
 
 	//REVISADO
 	private function _head()
 	{
+		$this->load->model("Inicio_model");
 		if($this->session->estado==TRUE)
 		{
 			$head = new stdClass();
@@ -73,7 +74,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	//REVISADO
+	
 	public function validacion()
 	{
 		if($this->input->post('rut_sesion'))
@@ -91,7 +92,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	//REVISADO
+	
 	public function comuna()
 	{
 		if($this->input->post('region'))
@@ -133,31 +134,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	//INNECESARIA
-	public function sucursal()
-	{
-		if($this->input->post('sucursal'))
-		{
-			$sucursal = $this->input->post('sucursal');
-			$this->load->model("Inicio_model");
-			$output = $this->Inicio_model->verificar_carro();
-			if($output!=FALSE)
-			{
-				$output2 = $this->Inicio_model->verificar_sucursal_carro();
-				if($this->session->estado==TRUE && $sucursal!=$output2->cod_sucursal)
-				{
-					$this->load->model("Inicio_model");
-					$output = $this->Inicio_model->limpiar_carro();
-				}
-			}
-			$this->session->sucursal = $sucursal;
-			echo "TRUE";
-		}else{
-			redirect(base_url());
-		}
-	}
-
-	//REVISADO
+	
 	public function fechas()
 	{
 		if($this->input->post('inicio'))
@@ -172,7 +149,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	//REVISADO
+	
 	private function _establecer_fechas($fecha_inicio,$fecha_fin)
 	{
 
@@ -198,7 +175,7 @@ class Inicio extends CI_Controller
 		echo "PENDIENTE";
 	}
 
-	//REVISADO
+	
 	public function guardar_registro()
 	{
 		if($this->input->post('rut'))
@@ -219,7 +196,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	//REVISADO
+	
 	public function registro()
 	{
 		if($this->session->estado==FALSE)
@@ -240,18 +217,31 @@ class Inicio extends CI_Controller
 	{
 		if($this->input->post('codigo'))
 		{
-			if($this->session->estado==TRUE)
+			if(is_numeric($this->input->post('cantidad')))
 			{
-				$codigo = $this->input->post('codigo');
-				$cantidad = $this->input->post('cantidad');
-				$this->load->model("Inicio_model");
-				$output = $this->Inicio_model->agregar_carro($codigo,$cantidad);
-				echo json_encode($output);
+				if($this->session->estado==TRUE)
+				{
+					$datos = new stdClass();
+					$datos->codigo = $this->input->post('codigo');
+					$datos->cantidad = $this->input->post('cantidad');
+					$datos->empresa = $this->input->post('empresa');
+					$datos->sucursal = $this->input->post('sucursal');
+					$this->load->model("Inicio_model");
+					$output = $this->Inicio_model->agregar_carro($datos);
+					echo json_encode($output);
+				}
+				else
+				{
+					$respuesta = new stdClass();
+					$respuesta->estado = 'LOGIN';
+					echo json_encode($respuesta);
+				}
 			}
 			else
 			{
 				$respuesta = new stdClass();
-				$respuesta->estado = 'LOGIN';
+				$respuesta->estado = 'FALSE';
+				$respuesta->mensaje = 'LA CANTIDAD DEBE SER UN VALOR NUMÉRICO';
 				echo json_encode($respuesta);
 			}
 		}
@@ -265,18 +255,31 @@ class Inicio extends CI_Controller
 	{
 		if($this->input->post('codigo'))
 		{
-			if($this->session->estado==TRUE)
+			if(is_numeric($this->input->post('cantidad')))
 			{
-				$codigo = $this->input->post('codigo');
-				$cantidad = $this->input->post('cantidad');
-				$this->load->model("Inicio_model");
-				$output = $this->Inicio_model->quitar_carro($codigo,$cantidad);
-				echo json_encode($output);
+				if($this->session->estado==TRUE)
+				{
+					$datos = new stdClass();
+					$datos->codigo = $this->input->post('codigo');
+					$datos->cantidad = $this->input->post('cantidad');
+					$datos->empresa = $this->input->post('empresa');
+					$datos->sucursal = $this->input->post('sucursal');
+					$this->load->model("Inicio_model");
+					$output = $this->Inicio_model->quitar_carro($datos);
+					echo json_encode($output);
+				}
+				else
+				{
+					$respuesta = new stdClass();
+					$respuesta->estado = 'LOGIN';
+					echo json_encode($respuesta);
+				}
 			}
 			else
 			{
 				$respuesta = new stdClass();
-				$respuesta->estado = 'LOGIN';
+				$respuesta->estado = 'FALSE';
+				$respuesta->mensaje = 'LA CANTIDAD DEBE SER UN VALOR NUMÉRICO';
 				echo json_encode($respuesta);
 			}
 		}
@@ -294,8 +297,9 @@ class Inicio extends CI_Controller
 			{
 				$datos = new stdClass();
 				$datos->codigo = $this->input->post('codigo');
+				$datos->sucursal = $this->input->post('sucursal');
+				$datos->empresa = $this->input->post('empresa');
 				$datos->rut = $this->session->rut;
-				$datos->sucursal = $this->session->sucursal;
 				$this->load->model("Inicio_model");
 				$output = $this->Inicio_model->borrar_herramienta_carro($datos);
 				echo json_encode($output);
@@ -340,7 +344,7 @@ class Inicio extends CI_Controller
 			$carro->carrito = $this->Inicio_model->obtener_carro();
 			if($carro->carrito!=FALSE)
 			{
-				$carro->total = $this->Inicio_model->obtener_total_carro($this->session->rut, $this->session->sucursal);
+				$carro->total = $this->Inicio_model->obtener_total_carro($this->session->rut);
 				$this->load->view("carrito",$carro);
 				$this->load->view("footer");
 			}
@@ -387,7 +391,7 @@ class Inicio extends CI_Controller
 				$arriendo = $this->Inicio_model->obtener_arriendo($value);
 				if($arriendo!=FALSE)
 				{
-					$detalle = $this->Inicio_model->obtener_detalle($value,$arriendo[0]->cod_sucursal);
+					$detalle = $this->Inicio_model->obtener_detalle($value);
 					if($detalle!=FALSE)
 					{
 						$retorno->arriendo = $arriendo;
@@ -424,70 +428,30 @@ class Inicio extends CI_Controller
 		echo "PENDIENTE";
 	}
 
-	public function detalle($value = "")
+	public function detalle($codigo_h = "",$codigo_s = "", $codigo_e = "")
 	{
-		if($value!="")
+		if($codigo_h!="" && $codigo_s!="" && $codigo_e!="")
 		{
 			$this->load->model("Inicio_model");			
+			$this->Inicio_model->verificar_descuentos();
 			$this->load->view("head",$this->_head());
 			$productos = new stdClass();
-			$productos->herramienta = $this->Inicio_model->obtener_producto($value);
+			$productos->herramienta = $this->Inicio_model->obtener_producto($codigo_h,$codigo_s,$codigo_e);
 			$this->load->view("detalle",$productos);
 			$this->load->view("footer");
 		}
 		else
 		{
-			redirect('productos/1');
+			redirect('productos/');
 		}
 	}
 
-	//REVISADO
-	public function productos()
+	private function _paginacion($filas,$datos)
 	{
-		$this->load->model("Inicio_model");		
 		$this->load->library("pagination");
-		$datos = new stdClass();
-		$precio = 1;
-		$stock = 1;	
-		if($this->input->get('precio') == null)
-		{
-			$datos->precio = $this->_orden(1);
-		}
-		else
-		{			
-			$datos->precio = $this->_orden($this->input->get('precio'));
-			$precio = $this->input->get('precio');			
-		}
-		if($this->input->get('stock') == null)
-		{
-			$datos->stock = $this->_orden(1);
-		}
-		else
-		{
-			$datos->stock = $this->_orden($this->input->get('stock'));
-			$stock = $this->input->get('stock');
-		}
-		if($this->input->get('categoria') == null)
-		{
-			$datos->categoria = null;
-		}
-		else
-		{
-			$datos->categoria = $this->input->get('categoria');
-		}	
-		if($this->input->get('pagina') == null)
-		{
-			$datos->pagina = 1;
-		}
-		else
-		{
-			$datos->pagina = $this->input->get('pagina');
-		}		
-		$total_filas = $this->Inicio_model->total_productos($datos,filter_var($this->input->get('search'),FILTER_SANITIZE_SPECIAL_CHARS));
-		$datos->items = 6;
 		$config['base_url'] = base_url()."productos/";
-		$config['total_rows'] = $total_filas;
-		$config['per_page'] = $datos->items;
+		$config['total_rows'] = $filas;
+		$config['per_page'] = $datos;
 		$config['reuse_query_string'] = TRUE;	
 		$config['use_page_numbers'] = TRUE;
 		$config['page_query_string'] = TRUE;
@@ -509,7 +473,100 @@ class Inicio extends CI_Controller
 		$config['next_tag_open'] = '<li>';
 		$config['next_tag_close'] = '</li>';
 		$config['next_link'] = '&raquo;';
-		$this->pagination->initialize($config);		
+		$this->pagination->initialize($config);	
+	}
+
+	private function _getPrecio($precio)
+	{
+		$retorno = new stdClass();
+		if($precio == null)
+		{
+			$retorno->orden = $this->_orden(1);
+			$retorno->precio = 1;
+		}
+		else
+		{			
+			$retorno->orden = $this->_orden($precio);
+			$retorno->precio = $precio;			
+		}
+		return $retorno;
+	}
+
+	private function _getStock($stock)
+	{
+		$retorno = new stdClass();
+		if($stock == null)
+		{
+			$retorno->orden = $this->_orden(1);
+			$retorno->stock = 1;
+		}
+		else
+		{
+			$retorno->orden = $this->_orden($stock);
+			$retorno->stock = $this->input->get('stock');
+		}
+		return $retorno;
+	}
+
+	private function _getCategoria($categoria)
+	{
+		$retorno = null;
+		if($categoria == null)
+		{
+			$retorno = null;
+		}
+		else
+		{
+			$retorno = $categoria;
+		}	
+		return $retorno;
+	}
+
+	private function _getPagina($pagina)
+	{
+		$retorno = 1;
+		if($pagina == null)
+		{
+			$retorno = 1;
+		}
+		else
+		{
+			$retorno = $pagina;
+		}	
+		return $retorno;
+	}
+
+	private function _getEmpresa($empresa)
+	{
+		$retorno = null;
+		if($empresa == null)
+		{
+			$retorno = null;
+		}
+		else
+		{
+			$retorno = $empresa;
+		}
+		return $retorno;
+	}
+
+	
+	public function productos()
+	{
+		$this->load->model("Inicio_model");			
+		$this->Inicio_model->verificar_descuentos();	
+		$datos = new stdClass();
+		$precio = 1;
+		$stock = 1;	
+		$datos->precio = $this->_getPrecio($this->input->get('precio'))->orden;
+		$datos->stock = $this->_getStock($this->input->get('stock'))->orden;
+		$datos->categoria = $this->_getCategoria($this->input->get('categoria'));
+		$datos->pagina = $this->_getPagina($this->input->get('pagina'));		
+			
+		$total_filas = $this->Inicio_model->total_productos($datos,filter_var($this->input->get('search'),FILTER_SANITIZE_SPECIAL_CHARS));
+		$datos->items = 6;
+		$this->_paginacion($total_filas,$datos->items);
+			
 		$this->load->view("head",$this->_head());		
 		$datos->filas = $total_filas;		
 		$productos = new stdClass();
@@ -531,8 +588,8 @@ class Inicio extends CI_Controller
 			}			
 		}
 		$productos->id = $datos->categoria;
-		$productos->precio = $precio;
-		$productos->stock = $stock;
+		$productos->precio = $this->_getPrecio($this->input->get('precio'))->precio;
+		$productos->stock = $this->_getStock($this->input->get('stock'))->stock;
 		$productos->filas = $datos->filas;
 		$this->load->view("productos",$productos);
 		$this->load->view("footer");
@@ -572,6 +629,96 @@ class Inicio extends CI_Controller
 		else
 		{
 			echo 'NULL';
+		}
+	}
+
+	public function cuenta()
+	{
+		if($this->session->estado==TRUE)
+		{
+			$this->load->view("head",$this->_head());	
+			$this->load->model("Inicio_model");
+			$output = new stdClass();
+			$output->arriendos = $this->Inicio_model->obtener_arriendos();
+			$this->load->view("arriendos", $output);
+			$this->load->view("footer");
+		}
+		else
+		{
+			redirect(base_url());
+		}
+	}
+
+	public function datos()
+	{
+		if($this->session->estado==TRUE)
+		{
+			$this->load->view("head",$this->_head());	
+			$this->load->model("Inicio_model");
+			$output = new stdClass();
+			$output->datos = $this->Inicio_model->obtener_usuario();
+			$this->load->view("datos", $output);
+			$this->load->view("footer");
+		}
+		else
+		{
+			redirect(base_url());
+		}
+	}
+
+	public function actualizar_contrasena(){
+		if($this->session->estado==TRUE)
+		{
+			if($this->input->post("password_old"))
+			{
+				$data = new stdClass();
+				$data->pass_old = $this->input->post("password_old");
+				$data->pass_new = $this->input->post("password_1");
+				$this->load->model("Inicio_model");
+				$output = $this->Inicio_model->actualizar_pass($data);
+				echo json_encode($output);
+			}
+			else
+			{
+				$respuesta = new stdClass();
+				$respuesta->estado = "ERROR";
+				$respuesta->mensaje = "ESTÁ INTENTANDO ACCEDER DE FORMA INDEBIDA";
+				echo json_encode($respuesta);
+			}			
+		}
+		else
+		{
+			redirect(base_url());
+		}
+	}
+
+	public function actualizar_datos(){
+		if($this->session->estado==TRUE)
+		{
+			if($this->input->post("nombres") && $this->input->post("apellidos") && $this->input->post("correo") && $this->input->post("telefono") && $this->input->post("direccion"))
+			{
+				$data = new stdClass();
+				$data->rut = $this->session->rut;
+				$data->nombres = $this->input->post("nombres");
+				$data->apellidos = $this->input->post("apellidos");
+				$data->correo = $this->input->post("correo");
+				$data->telefono = $this->input->post("telefono");
+				$data->direccion = $this->input->post("direccion");
+				$this->load->model("Inicio_model");
+				$output = $this->Inicio_model->actualizar_datos($data);
+				echo json_encode($output);
+			}
+			else
+			{
+				$respuesta = new stdClass();
+				$respuesta->estado = "ERROR";
+				$respuesta->mensaje = "ESTÁ INTENTANDO ACCEDER DE FORMA INDEBIDA";
+				echo json_encode($respuesta);
+			}			
+		}
+		else
+		{
+			redirect(base_url());
 		}
 	}
 

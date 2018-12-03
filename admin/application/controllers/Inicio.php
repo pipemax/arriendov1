@@ -521,7 +521,13 @@ class Inicio extends CI_Controller {
                 $datos->herramienta = $this->input->post('herramienta_nueva_vinculacion');
                 $datos->stock = $this->input->post('stock_nueva_vinculacion');
                 $datos->precio = $this->input->post('precio_nueva_vinculacion');
+                $datos->descuento = $this->input->post('descuento_nueva_vinculacion');
+                $datos->inicio = $this->input->post('fecha_inicio_nueva_vinculacion');
+                $datos->final = $this->input->post('fecha_final_nueva_vinculacion');
                 $this->load->model('Admin_model');
+                if($datos->descuento == ""){ $datos->descuento = null;}
+                if($datos->inicio == ""){ $datos->inicio = null;}
+                if($datos->final == ""){ $datos->final = null;}
                 $datos->empresa = $this->Admin_model->obtener_empresa_administrador();
                 $output = $this->Admin_model->vincular_herramienta($datos);
                 echo json_encode($output);
@@ -548,7 +554,13 @@ class Inicio extends CI_Controller {
                 $data->herramienta = $this->input->post('herramienta_vinculacion_modificacion');
                 $data->stock = $this->input->post('stock_vinculacion_modificacion');
                 $data->precio = $this->input->post('precio_vinculacion_modificacion');
+                $data->descuento = $this->input->post('descuento_vinculacion_modificacion');
+                $data->inicio = $this->input->post('fecha_inicio_vinculacion_modificacion');
+                $data->final = $this->input->post('fecha_final_vinculacion_modificacion');
                 $this->load->model('Admin_model');
+                if($data->descuento == ""){ $data->descuento = null;}
+                if($data->inicio == ""){ $data->inicio = null;}
+                if($data->final == ""){ $data->final = null;}
                 $data->empresa = $this->Admin_model->obtener_empresa_administrador();                
                 $output = $this->Admin_model->modificar_vinculacion($data);
                 echo json_encode($output);
@@ -781,6 +793,250 @@ class Inicio extends CI_Controller {
         {
             redirect(base_url());
         }
-
     }
+
+    public function ver_usuario()
+    {
+        if($this->session->estado==TRUE)
+        {
+            $this->load->model('Admin_model');
+            $output = $this->Admin_model->obtener_usuarios();
+            $view = new stdClass();
+            if($output!=FALSE)
+            {                
+                $view->output = $output;                
+            }
+            else
+            {
+                $view->output = FALSE;
+            }
+            $this->load->view('Intranet/head');
+            $this->load->view('Intranet/usuarios',$view);
+            $this->load->view('Intranet/footer');
+            $this->load->view('Intranet/end');
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function obtener_usuario()
+    {
+        if($this->session->estado==TRUE)
+        {
+            if($this->input->post('rut'))
+            {
+                $this->load->model('Admin_model');
+                $rut = $this->input->post('rut');
+                $output = $this->Admin_model->obtener_usuario($rut);
+                if($output!=FALSE)
+                {
+                    echo json_encode($output[0]);
+                }
+                else
+                {
+                    echo 'FALSE';
+                }
+            }
+            else
+            {
+                echo 'FALSE';
+            }
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function modificar_usuario()
+    {
+        if($this->session->estado==TRUE)
+        {
+            if($this->input->post('rut_modificar_usuario'))
+            {
+                $data = new stdClass();
+                $data->rut = preg_replace("/[^0-9]/", "", $this->input->post('rut_modificar_usuario'));
+                $data->nombres = $this->input->post('nombres_modificar_usuario');
+                $data->apellidos = $this->input->post('apellidos_modificar_usuario');
+                $data->correo = $this->input->post('correo_modificar_usuario');
+                $data->celular = $this->input->post('telefono_modificar_usuario');
+                $data->direccion = $this->input->post('direccion_modificar_usuario');
+                $this->load->model('Admin_model');
+                $output = $this->Admin_model->modificar_usuario($data); 
+                echo json_encode($output);
+            }
+            else
+            {
+                echo 'FALSE';
+            }
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function contrasena_usuario()
+    {
+        if($this->session->estado==TRUE)
+        {
+            if($this->input->post('rut') && $this->input->post('pass'))
+            {
+                $data = new stdClass();
+                $data->rut = preg_replace("/[^0-9]/", "", $this->input->post('rut'));
+                $data->pass = $this->input->post('pass');
+                $this->load->model('Admin_model');
+                $output = $this->Admin_model->contrasena_usuario($data);
+                echo json_encode($output);
+            }
+            else
+            {
+                echo 'FALSE';
+            }
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function arriendos()
+    {
+        if($this->session->estado==TRUE)
+        {
+            $this->load->model("Admin_model");
+            $output = new stdClass();
+            if($this->input->get('filtro_rut'))
+            {
+                $rut = preg_replace("/[^0-9]/", "", $this->input->get('filtro_rut'));
+                $output->output = $this->Admin_model->obtener_arriendos_rut($rut);
+            }
+            else if($this->input->get('filtro_fecha'))
+            {
+                $fecha_cliente = $this->input->get('filtro_fecha');
+                $fecha_formateada = date("d/m/Y", strtotime($fecha_cliente));
+                $output->output = $this->Admin_model->obtener_arriendos_fecha($fecha_formateada);
+            }
+            else
+            {
+                $output->output = $this->Admin_model->obtener_arriendos();
+            }
+            $this->load->view("Intranet/head");
+            $this->load->view("Intranet/arriendos", $output);
+            $this->load->view("Intranet/footer");
+            $this->load->view("Intranet/end");
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function detalle($valor = "")
+    {
+        if($this->session->estado==TRUE)
+        {
+            if($valor!="")
+            {
+                $this->load->model("Admin_model");
+                $output = new stdClass();               
+                $output->id = $valor; 
+                $output->empresa_admin = $this->Admin_model->obtener_empresa_administrador();
+                $output->arriendo = $this->Admin_model->obtener_arriendo($valor);
+                if($output->arriendo!=FALSE)
+                {
+                    $output->detalle = $this->Admin_model->obtener_detalle($valor);
+                }
+                else
+                {
+                    $output->arriendo = FALSE;
+                    $output->detalle = FALSE;
+                }
+                $this->load->view("Intranet/head");
+                $this->load->view("Intranet/detalle", $output);
+                $this->load->view("Intranet/footer");
+                $this->load->view("Intranet/end");
+            }
+            else
+            {
+                redirect("arriendos");
+            }            
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function obtener_detalle()
+    {
+        if($this->session->estado==TRUE)
+        {
+            if($this->input->post('herramienta') && $this->input->post('sucursal') && $this->input->post('empresa') 
+            && $this->input->post('arriendo'))
+            {   
+                $datos = new stdClass();
+                $datos->herramienta = $this->input->post('herramienta');
+                $datos->sucursal = $this->input->post('sucursal');
+                $datos->empresa = $this->input->post('empresa');
+                $datos->arriendo = $this->input->post('arriendo');
+                $this->load->model('Admin_model');
+                $output = $this->Admin_model->obtener_detalle_resumen($datos);
+                if($output!=FALSE)
+                {
+                    echo json_encode($output);
+                }
+                else
+                {
+                    echo 'FALSE';
+                }
+            }
+            else
+            {
+                redirect('arriendos');
+            }
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
+    public function modificar_detalle()
+    {
+        if($this->session->estado==TRUE)
+        {
+            if($this->input->post('herramienta') && $this->input->post('sucursal') && $this->input->post('empresa') 
+                && $this->input->post('arriendo') && $this->input->post('estado'))
+            {   
+                $datos = new stdClass();
+                $datos->herramienta = $this->input->post('herramienta');
+                $datos->sucursal = $this->input->post('sucursal');
+                $datos->empresa = $this->input->post('empresa');
+                $datos->arriendo = $this->input->post('arriendo');
+                $datos->estado = $this->input->post('estado');
+                $this->load->model('Admin_model');
+                $output = $this->Admin_model->modificar_detalle($datos);
+                if($output!=FALSE)
+                {
+                    echo json_encode($output);
+                }
+                else
+                {
+                    echo 'FALSE';
+                }
+            }
+            else
+            {
+                redirect('arriendos');
+            }
+        }
+        else
+        {
+            redirect(base_url());
+        }
+    }
+
 }
