@@ -2,6 +2,7 @@
 
 class Admin_model extends CI_model{
 
+    //D
     function validar_sesion($rut,$pass){
         $this->load->database();
         $procedimiento = "select bool,message from inicio_sesion_admin(?,?)";
@@ -28,6 +29,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_usuarios(){
         $this->load->database();
         $consulta = "select rut, nombres, apellidos, correo, celular, direccion, estado
@@ -47,6 +49,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_usuario($rut){
         $this->load->database();
         $consulta = "select rut, nombres, apellidos, correo, celular, direccion, estado
@@ -60,6 +63,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function modificar_usuario($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_user(?,?,?,?,?,?)";
@@ -70,6 +74,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D 
     public function contrasena_usuario($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_password_user(?,?)";
@@ -80,6 +85,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function obtener_administrador($rut){
         $this->load->database();
         $consulta = "select rut,nombres,apellidos,correo,celular,empresa,comuna  
@@ -96,6 +102,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function contrasena_administrador($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_password_administrador(?,?)";
@@ -106,6 +113,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function obtener_administradores(){
         $this->load->database();
         $consulta = "select ad.rut,ad.nombres,ad.apellidos,ad.correo,ad.celular,co.comuna_nombre
@@ -122,6 +130,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function insertar_administrador($data){
         $this->load->database();
         $consulta = "select bool,message from insertar_administrador(?,?,?,?,?,?,?,?,?)";
@@ -132,6 +141,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function modificar_administrador($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_administrador(?,?,?,?,?,?)";
@@ -142,6 +152,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function eliminar_administrador($data){
         $this->load->database();
         $consulta = "select bool,message from eliminar_administrador(?)";
@@ -152,6 +163,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function obtener_empresa_administrador(){
         $this->load->database();
         $consulta = "select empresa from administrador where rut = ?";
@@ -174,6 +186,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function insertar_sucursal($data){
         $this->load->database();
         $consulta = "select bool,message from nueva_sucursal(?,?,?,null,?,?)";
@@ -184,6 +197,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function modificar_sucursal($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_sucursal(?,?,?,?,?)";
@@ -194,6 +208,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function eliminar_sucursal($data){
         $this->load->database();
         $consulta = "select bool,message from eliminar_sucursal(?,?)";
@@ -204,6 +219,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function obtener_sucursal($codigo){
         $this->load->database();
         $consulta = "select cod_sucursal,nombre,direccion,telefono,comuna
@@ -218,6 +234,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function insertar_herramienta($data){
         $this->load->database();
         $consulta = "select bool,message from nueva_herramienta(?,?,?,?,?,?)";
@@ -228,6 +245,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function modificar_herramienta($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_herramienta(?,?,?,?,?,?)";
@@ -238,6 +256,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function eliminar_herramienta($data){
         $this->load->database();
         $consulta = "select bool,message from eliminar_herramienta(?,?)";
@@ -248,6 +267,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function vincular_herramienta($data){
         $this->load->database();
         $consulta = "select bool,message from vincular_herramienta_sucursal(?,?,?,?,?,?,?,?)";
@@ -258,6 +278,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function desvincular_herramienta($data){
         $this->load->database();
         $consulta = "select bool,message from desvincular_h_sucursal(?,?,?)";
@@ -268,6 +289,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function obtener_vinculacion($data){
         $this->load->database();
         $consulta = "select cod_herramienta,cod_sucursal,stock,precio,descuento,to_char(f_inicio_d,'DD/MM/YYYY') as f_inicio_d,to_char(f_final_d,'DD/MM/YYYY') as f_final_d
@@ -283,6 +305,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function modificar_vinculacion($data){
         $this->load->database();
         $consulta = "select bool,message from actualizar_h_sucursal(?,?,?,?,?,?,?,?)";
@@ -293,6 +316,7 @@ class Admin_model extends CI_model{
         return $respuesta;
     }
 
+    //D
     public function obtener_herramienta($codigo){
         $this->load->database();
         $consulta = "select he.cod_herramienta,he.nombre,he.descripcion,ca.cod_categoria,ca.nombre as categoria,he.url_foto
@@ -310,26 +334,28 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_herramienta_vinculada($codigo){
         $this->load->database();
-        $consulta = "select su.cod_sucursal, su.nombre, 'NO' as vinculado, sh.descuento
-                    from sucursal su join sucursal_herramienta sh
-                    on su.cod_sucursal = sh.cod_sucursal
-                    where su.cod_sucursal not in (select cod_sucursal
-                                                from sucursal_herramienta 
-                                                where cod_herramienta = ?)
-                    and su.cod_empresa = (select empresa from administrador where rut = ".$this->session->rut.")
-                    union
-                    select su.cod_sucursal, su.nombre, 'SI' as vinculado, sh.descuento
-                    from sucursal su join sucursal_herramienta sh
-                    on su.cod_sucursal = sh.cod_sucursal
-                    where su.cod_sucursal in (select cod_sucursal
+        $consulta = "select cod_sucursal, nombre, vinculado, descuento from
+                (select su.cod_sucursal, su.nombre, 'NO' as vinculado, sh.descuento
+                from sucursal su left outer join sucursal_herramienta sh
+                on su.cod_sucursal = sh.cod_sucursal
+                where su.cod_sucursal not in (select cod_sucursal
                                             from sucursal_herramienta 
                                             where cod_herramienta = ?)
-                    and sh.cod_herramienta = ?
-                    and su.cod_empresa = (select empresa from administrador where rut = ".$this->session->rut.")
-                    group by su.cod_sucursal, su.nombre, sh.descuento";
-        $output = $this->db->query($consulta,array($codigo,$codigo,$codigo));
+                and su.cod_empresa = (select empresa from administrador where rut = '".$this->session->rut."')
+                union
+                select su.cod_sucursal, su.nombre, 'SI' as vinculado, sh.descuento
+                from sucursal su join sucursal_herramienta sh
+                on su.cod_sucursal = sh.cod_sucursal
+                where su.cod_sucursal in (select cod_sucursal
+                                        from sucursal_herramienta )
+                and sh.cod_herramienta = ?
+                and su.cod_empresa = (select empresa from administrador where rut = '".$this->session->rut."')
+                group by su.cod_sucursal, su.nombre, sh.descuento) as RETORNO
+                order by nombre";
+        $output = $this->db->query($consulta,array($codigo,$codigo));
         if($output->num_rows()>0){
             return $output->result();
         }else{
@@ -337,6 +363,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_herramientas($datos){
         $this->load->database();
         $pagina = $datos->pagina;
@@ -392,6 +419,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_categorias(){
         $this->load->database();
         $consulta = "select * from categoria";
@@ -403,6 +431,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_categorias_herramienta($datos){
         $this->load->database();
         $output = NULL;
@@ -452,6 +481,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function obtener_total_herramientas($datos){
         $this->load->database();
         $output = NULL;
@@ -496,6 +526,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function limite_paginacion($pagina, $filas, $items){
         $limite = $filas;
         $offset = ($pagina - 1)  * $items;
@@ -505,6 +536,7 @@ class Admin_model extends CI_model{
         return $data;
     }
 
+    //D
     function obtener_comunas($region){
         $this->load->database();
         $consulta = "select c.comuna_id, c.comuna_nombre 
@@ -527,6 +559,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_comunas_sucursal($region){
         $this->load->database();
         $consulta = "select c.comuna_id, c.comuna_nombre 
@@ -544,6 +577,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_nombre_comuna($comuna){
         $this->load->database();
         $consulta = "select comuna_nombre
@@ -557,6 +591,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_region_sucursal($comuna){
         $this->load->database();
         $consulta = "select re.region_id,re.region_nombre
@@ -575,6 +610,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_regiones_sucursal(){
         $this->load->database();
         $consulta = "select region_id,region_nombre
@@ -588,6 +624,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_regiones(){
         $this->load->database();
         $consulta = "select re.region_id,re.region_nombre 
@@ -607,6 +644,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_region_administrador($rut){
         $this->load->database();
         $consulta = "select re.region_id,re.region_nombre 
@@ -624,6 +662,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_sucursales(){
         $this->load->database();
         $consulta = "select su.cod_sucursal,su.nombre,su.direccion,su.telefono,su.comuna,co.comuna_nombre
@@ -642,6 +681,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_arriendos(){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo ,A.total, A.rut_u,
@@ -661,6 +701,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_arriendos_rut($rut){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo ,A.total, A.rut_u,
@@ -681,6 +722,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_arriendos_fecha($fecha){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo ,A.total, A.rut_u,
@@ -701,6 +743,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_detalle($value){
         $this->load->database();
         $consulta = "SELECT D.cod_h, H.nombre, H.url_foto, D.cantidad, D.total_detalle, SH.precio, D.total_unitario, D.descuento,
@@ -725,6 +768,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_detalle_resumen($datos){
         $this->load->database();
         $consulta = "SELECT H.nombre, D.cantidad, D.total_detalle, D.total_unitario, D.descuento,
@@ -752,6 +796,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     function obtener_arriendo($value){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
@@ -768,6 +813,7 @@ class Admin_model extends CI_model{
         }
     }
 
+    //D
     public function modificar_detalle($data){
         $this->load->database();
         $consulta = "select bool,message from modificar_detalle(?,?,?,?,?)";

@@ -2,6 +2,7 @@
 
 class Inicio extends CI_Controller {
 
+    //D
 	public function index()
 	{
         if($this->session->estado==FALSE)
@@ -17,6 +18,7 @@ class Inicio extends CI_Controller {
         
     }
 
+    //D
     public function agregar_admin()
     {
         if($this->session->estado==TRUE)
@@ -47,6 +49,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function obtener_admin()
     {
         if($this->session->estado==TRUE)
@@ -77,6 +80,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function modificar_admin()
     {
         if($this->session->estado==TRUE)
@@ -105,6 +109,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function contrasena_admin()
     {
         if($this->session->estado==TRUE)
@@ -129,6 +134,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function eliminar_admin()
     {
         if($this->session->estado==TRUE)
@@ -152,6 +158,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function ver_admin()
     {
         if($this->session->estado==TRUE)
@@ -179,6 +186,7 @@ class Inicio extends CI_Controller {
         }
     }
     
+    //D
     public function sesion_admin()
     {
         if($this->input->post('rut'))
@@ -196,6 +204,7 @@ class Inicio extends CI_Controller {
 		}
     }
 
+    //D
     public function agregar_sucursal()
     {
         if($this->session->estado==TRUE)
@@ -223,6 +232,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function eliminar_sucursal()
     {
         if($this->session->estado==TRUE)
@@ -247,6 +257,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function modificar_sucursal()
     {
         if($this->session->estado==TRUE)
@@ -274,6 +285,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function obtener_sucursal()
     {
         if($this->session->estado==TRUE)
@@ -305,6 +317,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function ver_sucursales()
     {
         if($this->session->estado==TRUE)
@@ -332,6 +345,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function agregar_herramienta()
     {
         if($this->session->estado==TRUE)
@@ -392,6 +406,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function modificar_herramienta()
     {   
         if($this->session->estado==TRUE)
@@ -419,6 +434,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function eliminar_herramienta()
     {
         if($this->session->estado==TRUE)
@@ -453,6 +469,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function obtener_herramienta()
     {
         if($this->session->estado==TRUE)
@@ -482,6 +499,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function vinculacion_herramienta($value = null)
     {
         if($this->session->estado==TRUE)
@@ -511,6 +529,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function vincular_herramienta(){
         if($this->session->estado==TRUE)
         {   
@@ -543,6 +562,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function modificar_vinculacion()
     {   
         if($this->session->estado==TRUE)
@@ -576,7 +596,7 @@ class Inicio extends CI_Controller {
         }
     }
 
-
+    //D
     public function obtener_vinculacion(){
         if($this->session->estado==TRUE)
         {   
@@ -601,6 +621,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function desvincular_herramienta(){
         if($this->session->estado==TRUE)
         {   
@@ -625,6 +646,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function ver_herramientas()
     {
         if($this->session->estado==TRUE)
@@ -723,6 +745,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function cerrar_sesion()
     {
         if($this->session->estado)
@@ -736,6 +759,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function obtener_comunas()
     {
         if($this->session->estado==TRUE)
@@ -766,6 +790,7 @@ class Inicio extends CI_Controller {
 
     }
 
+    //D
     public function obtener_comunas_sucursal()
     {
         if($this->session->estado==TRUE)
@@ -774,7 +799,7 @@ class Inicio extends CI_Controller {
             {
                 $region = $this->input->post('region');
                 $this->load->model("Admin_model");
-                $output = $this->Admin_model->obtener_comunas_sucursal($region);
+                $output = $this->Admin_model->obtener_comunas_sucursal($region);    
                 if($output!=FALSE)
                 {
                     echo json_encode($output);
@@ -795,6 +820,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function ver_usuario()
     {
         if($this->session->estado==TRUE)
@@ -821,6 +847,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function obtener_usuario()
     {
         if($this->session->estado==TRUE)
@@ -850,6 +877,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function modificar_usuario()
     {
         if($this->session->estado==TRUE)
@@ -878,6 +906,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function contrasena_usuario()
     {
         if($this->session->estado==TRUE)
@@ -902,6 +931,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function arriendos()
     {
         if($this->session->estado==TRUE)
@@ -934,6 +964,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function detalle($valor = "")
     {
         if($this->session->estado==TRUE)
@@ -970,6 +1001,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function obtener_detalle()
     {
         if($this->session->estado==TRUE)
@@ -1004,6 +1036,7 @@ class Inicio extends CI_Controller {
         }
     }
 
+    //D
     public function modificar_detalle()
     {
         if($this->session->estado==TRUE)

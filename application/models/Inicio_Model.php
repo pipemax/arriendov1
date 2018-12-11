@@ -2,6 +2,7 @@
 
 class Inicio_Model extends CI_model{
 
+    //D
     function obtener_cantidad_carro($rut){
         $this->load->database();
         $consulta = "SELECT COUNT(*) as cantidad FROM carrito WHERE rut = ?";
@@ -38,7 +39,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    //D
     function obtener_categorias(){
         $this->load->database();
         $consulta = "SELECT C.cod_categoria,C.nombre, COUNT(H.cod_herramienta) AS contador 
@@ -60,7 +61,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    
     function obtener_categoria($value){
         if($value==null){
             return "Todas las Herramientas";
@@ -82,7 +83,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    //D
     function total_productos($datos, $busqueda = null){
         $this->load->database();
         $output = NULL;
@@ -311,7 +312,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    //D
     function limite_paginacion($pagina, $filas, $items){
         $limite = $filas;
         $offset = ($pagina - 1)  * $items;
@@ -321,7 +322,7 @@ class Inicio_Model extends CI_model{
         return $data;
     }
 
-    //REVISADO
+    //D
     function obtener_busqueda($datos,$busqueda){
         $this->load->database();
         $output = NULL;
@@ -395,7 +396,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    //D
     function obtener_productos($datos){
         $this->load->database();
         $output = NULL;
@@ -522,7 +523,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    //D
     function obtener_producto($codigo_h,$codigo_s,$codigo_e){
         $this->load->database();
         $output = NULL;
@@ -593,7 +594,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-    //REVISADO
+    //D
     function validar_sesion($rut,$pass){
         $this->load->database();
         $procedimiento = "select bool,message from inicio_sesion(?,?);";
@@ -607,7 +608,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
-    //REVISADO
+    //D
     private function _asignar_sesion($rut){
         $this->load->database();
         $consulta = "SELECT rut,nombres,apellidos,rol FROM usuario WHERE rut = ?";
@@ -621,7 +622,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
-
+    //D
     function verificar_carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
@@ -637,6 +638,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function verificar_comuna_carro($region,$comuna){
         $this->load->database();
         $consulta = "select bool,message from verificar_comuna(?,?,?)";
@@ -647,6 +649,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
+    //D
     function obtener_carro(){
         if($this->session->estado==TRUE){
             $this->load->database();
@@ -680,6 +683,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function borrar_herramienta_carro($datos){
         $this->load->database();
         $procedimiento = "select bool,message from borrar_herramienta_carrito(?,?,?,?);";
@@ -690,6 +694,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
+    //D
     function obtener_total_carro($rut){
         $this->load->database();
         $consulta = "SELECT sum(total) AS total FROM carrito 
@@ -704,6 +709,7 @@ class Inicio_Model extends CI_model{
 
     }
 
+    //D
     function agregar_carro($datos){
         $this->load->database();
         $consulta = "select comuna 
@@ -748,6 +754,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function quitar_carro($datos){
         $this->load->database();
         $consulta = "select comuna 
@@ -789,6 +796,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function realizar_registro($datos){
         $this->load->database();
         $procedimiento = "select bool,message from insertar_usuario(?,?,?,?,?,?,?);";
@@ -799,7 +807,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
-    //REVISADO
+    //D
     function limpiar_carro(){
         if($this->session->estado==TRUE){
             $rut = $this->session->rut;
@@ -815,6 +823,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function realizar_arriendo(){
         if($this->session->estado==TRUE){
             $rut = $this->session->rut;
@@ -836,6 +845,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
+    //D
     function obtener_arriendos(){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
@@ -853,6 +863,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function obtener_arriendo($value){
         $this->load->database();
         $consulta = "SELECT A.cod_arriendo,to_char(A.fecha_inicio, 'DD/MM/YYYY') as fecha_inicio,
@@ -870,6 +881,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function obtener_mas_arrendados(){
         $this->load->database();
         $consulta = "SELECT D.cod_h, H.nombre, H.url_foto, SH.precio, COUNT(D.id_a) AS cantidad_arriendos 
@@ -892,6 +904,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function obtener_detalle($value){
         $this->load->database();
         $consulta = "SELECT D.cod_h, H.nombre, H.url_foto, D.cantidad, D.total_detalle, SH.precio, D.descuento,
@@ -916,6 +929,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function obtener_usuario(){
         $this->load->database();
         $rut = $this->session->rut;
@@ -929,6 +943,7 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function actualizar_pass($data){
         $this->load->database();
         $rut = $this->session->rut;
@@ -940,6 +955,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
+    //D
     function actualizar_datos($data){
         $this->load->database();
         $rut = $this->session->rut;
@@ -951,7 +967,7 @@ class Inicio_Model extends CI_model{
         return $respuesta;
     }
 
-   
+    //D
     function obtener_comunas($region){
         $this->load->database();
         $consulta = "select distinct c.comuna_id, c.comuna_nombre 
@@ -976,13 +992,14 @@ class Inicio_Model extends CI_model{
         }
     }
 
+    //D
     function verificar_descuentos(){
         $this->load->database();
         $procedimiento = "select verificar_descuentos()";
         $this->db->query($procedimiento);
     }
 
-    
+    //D
     function obtener_regiones(){
         $this->load->database();
         $consulta = "select re.region_id,re.region_nombre 

@@ -3,6 +3,8 @@
 class Inicio extends CI_Controller 
 {
 
+	//Constructor del controlador que setea por defecto valores como region, comuna y fechas como valores
+	//por defecto del sistema.
 	public function __construct()
 	{
 		parent::__construct();
@@ -18,7 +20,7 @@ class Inicio extends CI_Controller
 		}			
 	}
 
-	//REVISADO
+	//D
 	private function _head()
 	{
 		$this->load->model("Inicio_model");
@@ -34,12 +36,11 @@ class Inicio extends CI_Controller
 		}
 		$head->regiones = $this->Inicio_model->obtener_regiones();
 		$head->comunas = $this->Inicio_model->obtener_comunas($this->session->region);
-		//$head->sucursal = $this->Inicio_model->obtener_sucursal($this->session->sucursal);
-		//$head->sucursales = $this->Inicio_model->obtener_sucursales();
 		$head->categorias = $this->Inicio_model->obtener_categorias();
 		return $head;
 	}
 
+	//D
 	public function index()
 	{		
 		$this->load->model("Inicio_model");		
@@ -51,7 +52,7 @@ class Inicio extends CI_Controller
 		$this->load->view("footer");
 	}
 
-	//REVISADO
+	//D
 	public function obtener_comunas()
 	{
 		if($this->input->post('region'))
@@ -74,7 +75,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	
+	//D
 	public function validacion()
 	{
 		if($this->input->post('rut_sesion'))
@@ -92,7 +93,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	
+	//D
 	public function comuna()
 	{
 		if($this->input->post('region'))
@@ -134,7 +135,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	
+	//D
 	public function fechas()
 	{
 		if($this->input->post('inicio'))
@@ -149,7 +150,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	
+	//D
 	private function _establecer_fechas($fecha_inicio,$fecha_fin)
 	{
 
@@ -175,7 +176,7 @@ class Inicio extends CI_Controller
 		echo "PENDIENTE";
 	}
 
-	
+	//D
 	public function guardar_registro()
 	{
 		if($this->input->post('rut'))
@@ -196,7 +197,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	
+	//D
 	public function registro()
 	{
 		if($this->session->estado==FALSE)
@@ -212,7 +213,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
-
+	//D
 	public function agregar_carrito()
 	{
 		if($this->input->post('codigo'))
@@ -251,6 +252,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function quitar_carrito()
 	{
 		if($this->input->post('codigo'))
@@ -289,6 +291,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function borrar_herramienta_carro()
 	{
 		if($this->input->post('codigo'))
@@ -318,6 +321,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function total_carro()
 	{
 		if($this->session->estado==TRUE)
@@ -334,6 +338,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function carrito()
 	{
 		if($this->session->estado==TRUE)
@@ -359,6 +364,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function arriendo()
 	{
 		if($this->session->estado==TRUE)
@@ -380,6 +386,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function resumen($value = "")
 	{
 		if($this->session->estado==TRUE)
@@ -428,6 +435,7 @@ class Inicio extends CI_Controller
 		echo "PENDIENTE";
 	}
 
+	//D
 	public function detalle($codigo_h = "",$codigo_s = "", $codigo_e = "")
 	{
 		if($codigo_h!="" && $codigo_s!="" && $codigo_e!="")
@@ -446,6 +454,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	private function _paginacion($filas,$datos)
 	{
 		$this->load->library("pagination");
@@ -476,6 +485,7 @@ class Inicio extends CI_Controller
 		$this->pagination->initialize($config);	
 	}
 
+	//D
 	private function _getPrecio($precio)
 	{
 		$retorno = new stdClass();
@@ -492,6 +502,7 @@ class Inicio extends CI_Controller
 		return $retorno;
 	}
 
+	//D
 	private function _getStock($stock)
 	{
 		$retorno = new stdClass();
@@ -508,6 +519,7 @@ class Inicio extends CI_Controller
 		return $retorno;
 	}
 
+	//D
 	private function _getCategoria($categoria)
 	{
 		$retorno = null;
@@ -522,6 +534,7 @@ class Inicio extends CI_Controller
 		return $retorno;
 	}
 
+	//D
 	private function _getPagina($pagina)
 	{
 		$retorno = 1;
@@ -536,6 +549,7 @@ class Inicio extends CI_Controller
 		return $retorno;
 	}
 
+	//NO IMPLEMENTADO AÚN
 	private function _getEmpresa($empresa)
 	{
 		$retorno = null;
@@ -550,7 +564,7 @@ class Inicio extends CI_Controller
 		return $retorno;
 	}
 
-	
+	//D
 	public function productos()
 	{
 		$this->load->model("Inicio_model");			
@@ -595,6 +609,7 @@ class Inicio extends CI_Controller
 		$this->load->view("footer");
 	}
 
+	//D
 	private function _orden($value = null)
 	{
 		if($value=="1")
@@ -611,6 +626,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function revisar_busqueda()
 	{
 		if($this->input->post('inicio') && $this->input->post('final') && $this->input->post('region') && $this->input->post('comuna'))
@@ -632,6 +648,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function cuenta()
 	{
 		if($this->session->estado==TRUE)
@@ -649,7 +666,8 @@ class Inicio extends CI_Controller
 		}
 	}
 
-	public function datos()
+	//D
+	public function datos()	
 	{
 		if($this->session->estado==TRUE)
 		{
@@ -666,6 +684,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function actualizar_contrasena(){
 		if($this->session->estado==TRUE)
 		{
@@ -692,6 +711,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function actualizar_datos(){
 		if($this->session->estado==TRUE)
 		{
@@ -722,6 +742,7 @@ class Inicio extends CI_Controller
 		}
 	}
 
+	//D
 	public function cerrar_sesion()
 	{
 		if($this->session->estado==TRUE)
